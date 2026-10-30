@@ -1,0 +1,4 @@
+interface:
+  display_name: "奥地利求学就业桔自媒体内容助手"
+  short_description: "创作奥地利生活文化、工作体验与职业家庭规划内容，兼顾品牌、创意及自然互动"
+  default_prompt: "用 $austria-study-career-content，根据我的主题和素材生成符合品牌标准、有创意且便于制作的自媒体内容。"
