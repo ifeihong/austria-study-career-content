@@ -4,7 +4,9 @@
 
 **让人看见生活、认识文化，再把工作与家庭规划讲具体。**
 
-`Skill ID: austria-study-career-content` · `版本：0.5.0` · `语言：简体中文为主`
+品牌定位：**奥地利学习、就业与家庭生活规划咨询**。公开内容以易懂的知识和真实场景建立信任，主动咨询后按实际服务范围进一步沟通。
+
+`Skill ID: austria-study-career-content` · `版本：0.6.0` · `语言：简体中文为主`
 
 [效果预览](#preview) · [内容方向](#content) · [快速开始](#quick-start) · [调用示例](#examples) · [本地出图](#renderer) · [常见问题](#faq)
 
@@ -57,7 +59,7 @@
 
 ### 护理职业发展：赴奥工作准备课
 
-围绕职业背景、德语准备、资格与材料、岗位职责、合同及职业生活展开。根据读者处于初步了解、语言准备、资格衔接还是岗位比较阶段，调整内容深度。
+优先关注相关专业在读及毕业学生，也区分已有护理资格的青年。围绕学习背景、德语准备、资格与材料、岗位职责、合同及职业生活展开；在读与已毕业不能套用同一就业路径。根据读者处于初步了解、语言准备、资格衔接还是岗位比较阶段，调整内容深度。
 
 ### 家庭教育与生活：一家人的奥地利计划
 
@@ -172,6 +174,14 @@ node scripts/render-post.cjs --input assets/post-example.json --out output/budge
 
 已测试完整导出、本地图片与源文件迁移、指定页修改及未改页字节一致性等行为。导出后仍须目视检查，不能把自动检查等同于真机或平台上传验证。详细字段、依赖与测试方式见[制作工具指南](references/production-tools.md)。
 
+## 知识型内容与咨询服务
+
+内容通过学习、德语、职业准备、家庭教育、文化与生活知识，让相关读者认出自己的问题。封面和推广不以“移民”“永居”等身份口号获客；必要政策解释仍使用准确名称，不能用咨询包装隐瞒真实服务或就业限制，也不声称避开某词即可规避限流。
+
+具体客户服务、费用与合作主体由团队确认，并保存在用户指定的私有工作区，不随公开仓库分发。可选本地配置 `service-context.local.json` 可指向私有简报。公开内容、主动私信、正式咨询与交付的范围见 [定位与咨询衔接](references/consultation-and-positioning.md)。
+
+政策时间、语言与长期居留等主张的本次核验见 [2026-10-30 政策快照](references/policy-snapshot-2026-10-30.md)，后续发布需再次核对。
+
 ## 事实、素材与品牌标准
 
 - **品牌一致：** 保留“奥地利求学就业桔”的名称、定位与语气；创意可变，不擅自新增业务承诺。
@@ -201,6 +211,8 @@ node scripts/render-post.cjs --input assets/post-example.json --out output/budge
 | [production-tools.md](references/production-tools.md) | 本地工具运行、输入与测试说明 |
 | [post-example.json](assets/post-example.json) | 可运行的五页图文输入示例 |
 | [renderer.test.cjs](tests/renderer.test.cjs) | 输入与浏览器集成测试 |
+| [consultation-and-positioning.md](references/consultation-and-positioning.md) | 知识型公开定位、咨询衔接与私有资料读取 |
+| [policy-snapshot-2026-10-30.md](references/policy-snapshot-2026-10-30.md) | 带来源的政策校准，含长期居留、护理和年度节点 |
 | [openai.yaml](agents/openai.yaml) | 支持该格式的客户端展示配置 |
 
 <a id="faq"></a>
