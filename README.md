@@ -6,7 +6,7 @@
 
 品牌定位：**奥地利学习、就业与家庭生活规划咨询**。公开内容以易懂的知识和真实场景建立信任，主动咨询后按实际服务范围进一步沟通。
 
-`Skill ID: austria-study-career-content` · `版本：0.6.1` · `语言：简体中文为主`
+`Skill ID: austria-study-career-content` · `版本：0.7.0` · `语言：简体中文为主`
 
 [效果预览](#preview) · [内容方向](#content) · [快速开始](#quick-start) · [调用示例](#examples) · [本地出图](#renderer) · [常见问题](#faq)
 
@@ -176,6 +176,20 @@ node scripts/render-post.cjs --input assets/post-example.json --out output/budge
 
 已测试完整导出、本地图片与源文件迁移、指定页修改及未改页字节一致性等行为。导出后仍须目视检查，不能把自动检查等同于真机或平台上传验证。详细字段、依赖与测试方式见[制作工具指南](references/production-tools.md)。
 
+## 专题知识库与公开内容规范
+
+专业知识与公开表达分开维护：
+
+| 模块 | 内容与作用 |
+|---|---|
+| [护理职业知识库](references/knowledge-nursing-career.md) | 8 组知识卡，覆盖读者起点、职业层级、认定、语言、注册、岗位、时间成本与常见误解 |
+| [家庭居住规划知识库](references/knowledge-family-residence.md) | 8 组知识卡，覆盖家庭目标、许可性质、生活来源、材料、续期、年度节点及长期安排 |
+| [公开表达规范](references/public-expression-rules.md) | 默认避用身份营销表达、不强推办理或商业产品，并明确必要事实解释的边界 |
+
+知识卡保留正式名称、来源、适用对象、核验日期和更新触发条件。公开稿采用易懂的知识、生活文化和准备视角，不直接照搬政策或项目资料。必要条件不能因为避词而被省略；具体商业资料继续保存在私有工作区。
+
+生活、文化、城市氛围、亲子日常和有依据的工作优势仍是长期内容支柱，不会因知识库增加而变成只有材料与申请流程的账号。
+
 ## 知识型内容与咨询服务
 
 内容通过学习、德语、职业准备、家庭教育、文化与生活知识，让相关读者认出自己的问题。封面和推广不以“移民”“永居”等身份口号获客；必要政策解释仍使用准确名称，不能用咨询包装隐瞒真实服务或就业限制，也不声称避开某词即可规避限流。
@@ -215,6 +229,9 @@ node scripts/render-post.cjs --input assets/post-example.json --out output/budge
 | [renderer.test.cjs](tests/renderer.test.cjs) | 输入与浏览器集成测试 |
 | [consultation-and-positioning.md](references/consultation-and-positioning.md) | 知识型公开定位、咨询衔接与私有资料读取 |
 | [policy-snapshot-2026-10-30.md](references/policy-snapshot-2026-10-30.md) | 带来源的政策校准，含长期居留、护理和年度节点 |
+| [knowledge-nursing-career.md](references/knowledge-nursing-career.md) | 护理学习与职业发展专题知识卡 |
+| [knowledge-family-residence.md](references/knowledge-family-residence.md) | 家庭生活与配额居留相关专题知识卡 |
+| [public-expression-rules.md](references/public-expression-rules.md) | 公开模式、默认避用表达、销售边界与检查 |
 | [openai.yaml](agents/openai.yaml) | 支持该格式的客户端展示配置 |
 
 <a id="faq"></a>

@@ -1,5 +1,7 @@
 # 内容生成与创意指南
 
+公开稿先确定任务与目标；涉及专业事实时按需读取 [护理知识库](knowledge-nursing-career.md) 或 [家庭知识库](knowledge-family-residence.md)，再按 [公开表达规范](public-expression-rules.md) 写成适合读者的内容。不要直接把专业术语列表、办理说明或私有项目简报当作公开成稿。
+
 ## 最小创作简报
 
 优先从用户原话提取，缺项可合理默认，不要让每次创作变成问卷：
