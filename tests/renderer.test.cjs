@@ -24,12 +24,20 @@ test('reject external image URLs and unsafe CSS values',()=>{
  const b=post();b.theme={accent:'red; background:url(https://example.com)'};assert.throws(()=>validatePost(b),/color/i);
 });
 
+test('reject misspelled or layout-incompatible fields instead of silently dropping content',()=>{
+ const a=post();a.pages[0].subTitle='不能漏掉的说明';assert.throws(()=>validatePost(a),/subTitle/);
+ const b=post();b.publish.topic=['护理'];assert.throws(()=>validatePost(b),/topic/);
+ const c=post();c.pages[0].rows=[['不可丢失']];assert.throws(()=>validatePost(c),/table/);
+ const d=post();d.pages[0].items[0].body='不能漏掉的正文';assert.throws(()=>validatePost(d),/body/);
+});
+
 test('render full post, preserve unselected pages and reject unsafe partial revision',
  {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-render-test-'));
  const config=path.join(dir,'post.json');const original=post();
  original.pages[0].title='<img src=x onerror=alert(1)>\n标题按文字显示';
- fs.writeFileSync(config,JSON.stringify(original));
+ // Windows editors commonly emit a UTF-8 BOM; it must not prevent a valid export.
+ fs.writeFileSync(config,'\uFEFF'+JSON.stringify(original));
  const a=path.join(dir,'v01');await renderPost({input:config,out:a});
  assert.ok(fs.existsSync(path.join(a,'preview.jpg')));
  const m1=JSON.parse(fs.readFileSync(path.join(a,'manifest.json')));

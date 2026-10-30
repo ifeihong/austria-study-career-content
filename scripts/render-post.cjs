@@ -8,8 +8,11 @@ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
 function need(ok,message){if(!ok)throw new Error(message);}
 function text(value,label,required=false){need(typeof value==='string'&&(!required||value.trim().length>0),label+' must be text');}
+function keys(value,allowed,label){for(const key of Object.keys(value))need(allowed.includes(key),'Unknown '+label+' field: '+key);}
+function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}
 function validatePost(input){
  need(input&&typeof input==='object'&&!Array.isArray(input),'Post must be an object');
+ keys(input,['title','brand','style','theme','pages','publish'],'post');
  const post=structuredClone(input);text(post.title,'title',true);
  post.brand??='奥地利求学就业桔';text(post.brand,'brand',true);
  post.style??='S1';need(STYLES.includes(post.style),'Unknown global style');
@@ -19,6 +22,7 @@ function validatePost(input){
  const ids=new Set();
  for(const p of post.pages){
   need(p&&typeof p==='object'&&!Array.isArray(p),'Each page must be an object');
+  keys(p,['id','title','layout','style','subtitle','eyebrow','note','imageLabel','image','items','columns','rows'],'page');
   need(typeof p.id==='string'&&/^[a-z0-9][a-z0-9-]{0,48}$/.test(p.id),'Invalid page ID');
   need(!ids.has(p.id),'Duplicate page ID');ids.add(p.id);
   text(p.title,'page title',true);p.layout??='checklist';need(LAYOUTS.includes(p.layout),'Unknown page layout');
@@ -26,14 +30,15 @@ function validatePost(input){
   for(const k of ['subtitle','eyebrow','note','imageLabel'])if(p[k]!==undefined)text(p[k],k);
   if(p.image!==undefined){text(p.image,'image',true);need(!/^[a-z]+:/i.test(p.image)&&!path.isAbsolute(p.image)&&!p.image.split(/[\\/]/).includes('..'),'image must be a local relative path without parent traversal');}
   p.items??=[];need(Array.isArray(p.items),'items must be an array');
-  for(const item of p.items){need(item&&typeof item==='object','item must be an object');text(item.heading,'item heading',true);if(item.text!==undefined)text(item.text,'item text');}
+  for(const item of p.items){need(item&&typeof item==='object'&&!Array.isArray(item),'item must be an object');keys(item,['heading','text'],'item');text(item.heading,'item heading',true);if(item.text!==undefined)text(item.text,'item text');}
+  if(p.layout!=='table')need(p.columns===undefined&&p.rows===undefined,'columns and rows require table layout');
   if(p.layout==='table'){
    need(Array.isArray(p.columns)&&p.columns.length>0,'table columns required');p.columns.forEach(v=>text(v,'column',true));
    need(Array.isArray(p.rows),'table rows required');
    for(const row of p.rows){need(Array.isArray(row)&&row.length===p.columns.length,'Row must match table column count');row.forEach(v=>text(v,'cell'));}
   }
  }
- if(post.publish!==undefined){need(post.publish&&typeof post.publish==='object','publish must be an object');text(post.publish.title,'publish title',true);text(post.publish.body,'publish body',true);need(Array.isArray(post.publish.topics),'topics must be an array');post.publish.topics.forEach(v=>text(v,'topic',true));}
+ if(post.publish!==undefined){need(post.publish&&typeof post.publish==='object'&&!Array.isArray(post.publish),'publish must be an object');keys(post.publish,['title','body','topics'],'publish');text(post.publish.title,'publish title',true);text(post.publish.body,'publish body',true);need(Array.isArray(post.publish.topics),'topics must be an array');post.publish.topics.forEach(v=>text(v,'topic',true));}
  return post;
 }
 function readImage(root,relative){
@@ -59,7 +64,7 @@ async function renderPost(options){
  need(options.input&&options.out,'input and out are required');
  const input=path.resolve(options.input),out=path.resolve(options.out);
  need(!fs.existsSync(out),'Output directory already exists; choose a new version.');
- const post=validatePost(JSON.parse(fs.readFileSync(input,'utf8')));
+ const post=validatePost(readJson(input));
  const assets=new Map(post.pages.filter(p=>p.image).map(p=>[p.id,readImage(path.dirname(input),p.image)]));
  const rootConfig={...post};delete rootConfig.pages;delete rootConfig.publish;
  const globalFingerprint=sha(JSON.stringify({config:rootConfig,renderer:sha(fs.readFileSync(__filename))}));
@@ -67,7 +72,7 @@ async function renderPost(options){
  let previous,base,selected=new Set(post.pages.map(p=>p.id));
  if(options.base||options.pages){
   need(options.base&&Array.isArray(options.pages)&&options.pages.length>0,'Partial revision requires base and nonempty pages');
-  base=path.resolve(options.base);previous=JSON.parse(fs.readFileSync(path.join(base,'manifest.json'),'utf8'));
+  base=path.resolve(options.base);previous=readJson(path.join(base,'manifest.json'));
   need(previous.schemaVersion===1&&Array.isArray(previous.pages),'Unsupported base manifest');
   need(previous.globalFingerprint===globalFingerprint,'Global settings changed; create a full revision');
   need(JSON.stringify(previous.pages.map(p=>p.id))===JSON.stringify(specs.map(p=>p.id)),'Page order changed; create a full revision');

@@ -34,6 +34,8 @@ node scripts/render-post.cjs --input assets/post-example.json --out output/budge
 
 参考 [可执行示例](../assets/post-example.json)。字段中的文本全部转义后排版，不接受 HTML 或 CSS 片段。
 
+输入使用 UTF-8 JSON，支持 Windows 编辑器可能附带的 UTF-8 BOM。字段名严格按下表填写，未知字段或在非 table 页面填写 columns/rows 会报错，避免拼写错误导致内容静默遗漏。内部来源记录、提示词与审核状态另存文件，不向排版 JSON 任意加字段。
+
 | 层级 | 字段与含义 |
 |---|---|
 | 全局 | `title` 文档名称；`brand` 品牌署名，默认既定品牌；`style` 为 S1—S5；可选 `theme` 的 background、ink、accent 为六位十六进制颜色 |
