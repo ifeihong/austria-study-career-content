@@ -38,7 +38,7 @@
 | 能力 | 实际能做什么 | 交付或资源 |
 |---|---|---|
 | 选题与创意 | 按读者背景、具体问题与内容目标设计切口、标题、结构和系列；有历史作品时比较重复点 | 选题、标题、创作简报与系列规划 |
-| 小红书完整图文 | 组织每页信息，制作封面和内页，组合图片、解释、对照、表格与步骤 | 独立图片、标题正文、话题、预览及可编辑源 |
+| 小红书完整图文 | 组织每页信息，制作封面和内页，组合图片、解释、对照、表格与步骤 | 独立图片、匹配组图的标题、含 emoji 正文、话题、预览及可编辑源 |
 | 系列 AI 配图 | 保持画风与氛围统一，按每页任务生成不同场景、动作和构图，再融入可控文字层 | 实际素材、提示词与页图对应记录；依赖可用图像工具 |
 | 资料型原创 | 从实际可读的国内外内容中提炼问题与表达方法，重新核对事实并独立组织 | 来源记录、独立解释、图解和实用内容 |
 | 专业内容审核 | 区分护理教育、认定、注册、录用及许可；核对家庭规划涉及的对象、日期和条件 | 主张与出处核对、公开稿改写 |
@@ -128,12 +128,18 @@ Skill 提供方法、资源和本地图文工具；联网查证、AI 出图、�
 
 确认范围与工具素材 → 查来源和主张 → 初审事实与公开用词 → 成稿及逐页任务 → 配图规划与设计 → 实际制作 → 内容、视觉分别验收 → 交付与版本记录。
 
+每套按实际图片单独写标题、含 emoji 的正文和相关标签，并检查主题、数字与条件的一致性。普通图文采用本地保守预算：标题 20 个 UTF-16 单元、正文合并话题与换行后 1000 单元；通常选 4—6 个相关话题，本地编辑上限 8 个。该计数不是平台算法，话题数量建议也不等于官方硬上限，发布前按当前界面复核。详见 [字段依据与复制规范](references/xiaohongshu-publish-fields.md)。
+
 小红书完整发布包包含：
 
 ```text
 post/
   images/          封面和全部内页，按顺序单独上传
-  publish.md       可复制的标题、正文与话题
+  publish.md       可审阅的标题、正文与话题
+  publish-title.txt 仅标题，复制到标题栏
+  publish-body.txt  正文与一次话题串，复制到正文栏
+  publish-topics.txt 单独话题串，按需使用，勿重复追加
+  publish-check.json 内部字段计数，不粘贴到平台
   preview.jpg      整套预览
   source/          可编辑排版、输入与必要素材
   manifest.json    本地渲染时生成的文件摘要与检查记录
@@ -188,7 +194,7 @@ npm test
 | 选题、系列、搜索与跨平台 | [受众与选题](references/audience-and-topics.md)、[编辑生产方法](references/editorial-production.md)、[创意指南](references/creative-playbook.md) |
 | 生活文化与自然互动 | [生活文化内容卡](references/knowledge-lifestyle-culture.md)、[生活文化与互动](references/lifestyle-culture-engagement.md) |
 | 专业知识与查证 | [护理知识](references/knowledge-nursing-career.md)、[家庭知识](references/knowledge-family-residence.md)、[来源库](references/source-library.md)、[证据审核](references/evidence-review.md) |
-| 小红书设计与配图 | [完整制作指南](references/xiaohongshu-production.md)、[风格库](references/xiaohongshu-styles.md)、[视觉验收](references/visual-production.md)、[正式样稿与素材](assets/editorial/README.md) |
+| 小红书设计与配图 | [完整制作指南](references/xiaohongshu-production.md)、[发布字段规范](references/xiaohongshu-publish-fields.md)、[风格库](references/xiaohongshu-styles.md)、[视觉验收](references/visual-production.md)、[正式样稿与素材](assets/editorial/README.md) |
 | 图片导出、修改与检查 | [制作工具](references/production-tools.md)、[渲染脚本](scripts/render-post.cjs)、[回归测试](tests/renderer.test.cjs)、[版本与私有资料](references/revision-and-private-data.md) |
 | 视频与数字人 | [视频交付规范及脚本示例](references/video-production.md) |
 | 评论、数据与后续咨询 | [素材与反馈](references/materials-and-feedback.md)、[咨询衔接](references/consultation-and-positioning.md) |

@@ -39,7 +39,7 @@ node scripts/render-post.cjs --input assets/editorial/family.json --out output/f
 | 层级 | 字段与含义 |
 |---|---|
 | 全局 | `design` 为 basic 或 editorial，省略时保留 basic 兼容行为；正式图文显式采用 editorial 或自定义设计；`title` 文档名称；`brand` 品牌署名，默认既定品牌；`style` 为 S1—S5；可选 `theme` 的 background、ink、accent 为六位十六进制颜色 |
-| 发布文案 | 可选 `publish`，含 title、body、topics 数组；存在时输出 publish.md，否则只是图片制作任务，不是完整发布包 |
+| 发布文案 | 可选 `publish`，含 title、body、topics 数组；存在时输出 publish.md、标题/正文/话题 TXT 与内部 publish-check.json；按 [普通图文字段规范](xiaohongshu-publish-fields.md) 校验保守 20/1000 单元预算及本地最多 8 个话题，否则只是图片制作任务，不是完整发布包 |
 | 页面 | `pages` 数组；每页必须有唯一的英文小写字母、数字及连字符 `id`，以及非空 `title` |
 | 页面排版 | `layout` 的基础值为 cover、checklist、steps、table、split；editorial 模式另支持 poster、feature、cards、worksheet、journey；可选页级 style、eyebrow、subtitle、note |
 | 内容条目 | `items` 数组，每项有 heading 和可选 text |
@@ -84,3 +84,5 @@ npm test
 ```
 
 默认运行输入校验测试。设置 `RUN_RENDER_TESTS=1` 后启用浏览器集成测试，需要依赖与浏览器可用；可与上述两个环境变量配合。测试实际覆盖完整出图、文字转义、本地图片与可迁移源文件、指定页修改、未改页字节一致、全局/未指定页改动拒绝、输出目录冲突及溢出拒绝。
+
+发布文案的本地预算以 UTF-16 单元计数，正文合并话题和换行后校验；超长、重复话题或格式不符时报错，不自动截断。规则依据及未实测边界见 [发布字段规范](xiaohongshu-publish-fields.md)。渲染器不登录平台，不确认真实话题挂接。

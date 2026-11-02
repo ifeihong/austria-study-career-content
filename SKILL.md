@@ -10,6 +10,7 @@ description: 为“奥地利求学就业桔”创作和审核奥地利美好生�
 ## 使用资料
 
 - 每次使用先读 [品牌标准](references/brand-standard.md)。这是品牌定位、受众、语气与栏目依据。
+- 每套小红书图文必须分别提供匹配实际图片的推荐标题、含适量 emoji 的正文及相关话题/tag；按 [发布字段规范](references/xiaohongshu-publish-fields.md) 核对普通图文的保守预算和当前平台界面，不能用通用文案配不同组图。用户要求纯文字或专项内容需克制时遵循其范围。
 - 生成小红书图文时，读 [小红书完整制作指南](references/xiaohongshu-production.md)，默认完成独立图片与发布文案；明确只要文案或提案时按指定范围交付。
 - 正式图文设计先读 [视觉制作与验收](references/visual-production.md)，再按 [风格库](references/xiaohongshu-styles.md) 选方向。默认参照 [V10 完整设计样稿](assets/editorial/README.md) 的完成度，加入真正服务内容的配图与图解；旧基础文字示例仅作技术回归，不自动当作发布成品。
 - 生成选题、视频或跨平台改编时，读 [内容生成指南](references/creative-playbook.md)，只采用当前任务有关的部分。

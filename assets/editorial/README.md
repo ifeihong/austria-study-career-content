@@ -23,3 +23,5 @@ node scripts/render-post.cjs --input assets/editorial/family.json --out output/f
 正式生产方法见 [视觉制作与验收](../../references/visual-production.md)。旧基础示例保留作工具回归，不作为本品牌正式成品的默认视觉质量线。
 
 同套生成主图不重复：文化三张对应空间、物件与阅读；家庭两张对应共同规划与表达需求。文字对照/工作表不强制加图。配图规划与提示词见 [PROMPTS.md](PROMPTS.md)。
+
+三套各有独立匹配的发布标题、含 emoji 正文和 5 个相关话题，保存在对应 JSON 的 publish 字段。导出后使用 publish-title.txt 和 publish-body.txt 分别复制；publish-topics.txt 供独立选择话题时使用，不重复追加。内部统计见 publish-check.json，实际计数和话题挂接按当前投稿界面确认。

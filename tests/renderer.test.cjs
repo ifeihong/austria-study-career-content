@@ -47,6 +47,17 @@ test('editorial layouts require an intentional design and real local image for i
  const c=post();c.design='editorial';c.pages[3].layout='worksheet';assert.equal(validatePost(c).pages[3].rows.length,1);
 });
 
+test('publishing fields enforce conservative standard-note limits including emoji and topics',()=>{
+ const a=post();a.publish.title='字'.repeat(18)+'🌿';assert.doesNotThrow(()=>validatePost(a));
+ a.publish.title+='字';assert.throws(()=>validatePost(a),/title.*20/i);
+ const b=post();b.publish.topics=['护理'];b.publish.body='字'.repeat(995);assert.doesNotThrow(()=>validatePost(b));
+ b.publish.body+='字';assert.throws(()=>validatePost(b),/body.*1000/i);
+ const c=post();c.publish.topics=['护理','#护理'];assert.throws(()=>validatePost(c),/duplicate.*topic/i);
+ const d=post();d.publish.topics=['护理 学习'];assert.throws(()=>validatePost(d),/topic.*format/i);
+ const e=post();e.publish.topics=Array.from({length:9},(_,i)=>'主题'+i);assert.throws(()=>validatePost(e),/8.*editorial/i);
+ const f=post();f.publish.title='两行\n标题';assert.throws(()=>validatePost(f),/single line/i);
+});
+
 test('render full post, preserve unselected pages and reject unsafe partial revision',
  {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-render-test-'));
@@ -138,6 +149,12 @@ test('editorial posts export all actual media and portable sources across three 
   for(const page of source.pages)if(page.image)assert.ok(fs.statSync(path.join(out,'source',page.image)).size>0);
   for(const page of manifest.pages){const png=fs.readFileSync(path.join(out,page.file));assert.equal(png.readUInt32BE(16),1080);assert.equal(png.readUInt32BE(20),1440);}
   assert.ok(fs.existsSync(path.join(out,'publish.md')));
+  assert.equal(fs.readFileSync(path.join(out,'publish-title.txt'),'utf8'),source.publish.title);
+  assert.equal(fs.readFileSync(path.join(out,'publish-body.txt'),'utf8'),source.publish.body+'\n\n'+source.publish.topics.map(t=>'#'+t).join(' '));
+  const copyCheck=JSON.parse(fs.readFileSync(path.join(out,'publish-check.json'),'utf8'));
+  assert.ok(copyCheck.titleUnits<=20&&copyCheck.bodyWithTopicsUnits<=1000);
+  assert.equal(copyCheck.platformEditorVerified,false);
+  assert.equal(fs.readFileSync(path.join(out,'publish-topics.txt'),'utf8'),source.publish.topics.map(t=>'#'+t).join(' '));
   if(name==='nursing')await renderPost({input:path.join(out,'source/post.json'),out:path.join(dir,'portable-nursing')});
  }
  console.log('Editorial validation directory:',dir);

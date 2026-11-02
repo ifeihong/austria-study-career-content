@@ -11,6 +11,26 @@ function need(ok,message){if(!ok)throw new Error(message);}
 function text(value,label,required=false){need(typeof value==='string'&&(!required||value.trim().length>0),label+' must be text');}
 function keys(value,allowed,label){for(const key of Object.keys(value))need(allowed.includes(key),'Unknown '+label+' field: '+key);}
 function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}
+// Conservative local profile for standard image-text notes, not a replica of the platform counter.
+// Recheck the dated evidence and live editor before changing: references/xiaohongshu-publish-fields.md.
+function publishStats(publish){
+ const topicsText=publish.topics.map(t=>'#'+t).join(' ');
+ const bodyWithTopics=publish.body+'\n\n'+topicsText;
+ return {profile:'xhs-standard-conservative-2026-11-02',countMethod:'UTF-16 code units; includes spaces, newlines, emoji and topic text',titleUnits:publish.title.length,bodyUnits:publish.body.length,bodyWithTopicsUnits:bodyWithTopics.length,topicCount:publish.topics.length,titleBudget:20,bodyWithTopicsBudget:1000,topicEditorialCap:8,platformEditorVerified:false};
+}
+function validatePublish(publish){
+ need(publish&&typeof publish==='object'&&!Array.isArray(publish),'publish must be an object');
+ keys(publish,['title','body','topics'],'publish');text(publish.title,'publish title',true);text(publish.body,'publish body',true);
+ need(!/[\r\n]/.test(publish.title),'publish title must be a single line');
+ need(Array.isArray(publish.topics)&&publish.topics.length>0,'topics must be a nonempty array');
+ publish.topics=publish.topics.map(v=>{text(v,'topic',true);const t=v.trim().replace(/^#/, '').normalize('NFC');need(/^[\p{L}\p{N}_]+$/u.test(t),'Invalid topic format: use a single name without spaces, punctuation or emoji');return t;});
+ need(new Set(publish.topics.map(t=>t.toLowerCase())).size===publish.topics.length,'Duplicate topic');
+ const stats=publishStats(publish);
+ need(stats.titleUnits<=20,'publish title exceeds the local 20-unit standard-note budget');
+ need(stats.bodyWithTopicsUnits<=1000,'publish body including topics exceeds the local 1000-unit standard-note budget');
+ need(stats.topicCount<=8,'Use at most 8 topics under the local editorial cap, not a verified platform maximum');
+ return publish;
+}
 function validatePost(input){
  need(input&&typeof input==='object'&&!Array.isArray(input),'Post must be an object');
  keys(input,['title','brand','style','theme','design','pages','publish'],'post');
@@ -46,7 +66,7 @@ function validatePost(input){
    for(const row of p.rows){need(Array.isArray(row)&&row.length===p.columns.length,'Row must match table column count');row.forEach(v=>text(v,'cell'));}
   }
  }
- if(post.publish!==undefined){need(post.publish&&typeof post.publish==='object'&&!Array.isArray(post.publish),'publish must be an object');keys(post.publish,['title','body','topics'],'publish');text(post.publish.title,'publish title',true);text(post.publish.body,'publish body',true);need(Array.isArray(post.publish.topics),'topics must be an array');post.publish.topics.forEach(v=>text(v,'topic',true));}
+ if(post.publish!==undefined)post.publish=validatePublish(post.publish);
  return post;
 }
 function readImage(root,relative){
@@ -177,7 +197,14 @@ async function renderPost(options){
  const portable=structuredClone(post);
  if(assets.size){fs.mkdirSync(path.join(out,'source/media'));for(const p of portable.pages)if(assets.has(p.id)){const a=assets.get(p.id);p.image='media/'+p.id+a.extension;fs.writeFileSync(path.join(out,'source',p.image),a.bytes);}}
  fs.writeFileSync(path.join(out,'source/post.json'),JSON.stringify(portable,null,2)+'\n');
- if(post.publish)fs.writeFileSync(path.join(out,'publish.md'),'# 推荐标题\n\n'+post.publish.title+'\n\n# 正文\n\n'+post.publish.body+'\n\n# 话题\n\n'+post.publish.topics.map(t=>'#'+t.replace(/^#+/,'')).join(' ')+'\n');
+ if(post.publish){
+  const topics=post.publish.topics.map(t=>'#'+t).join(' ');
+  fs.writeFileSync(path.join(out,'publish.md'),'# 推荐标题\n\n'+post.publish.title+'\n\n# 正文\n\n'+post.publish.body+'\n\n# 话题\n\n'+topics+'\n');
+  fs.writeFileSync(path.join(out,'publish-title.txt'),post.publish.title);
+  fs.writeFileSync(path.join(out,'publish-body.txt'),post.publish.body+'\n\n'+topics);
+  fs.writeFileSync(path.join(out,'publish-topics.txt'),topics);
+  fs.writeFileSync(path.join(out,'publish-check.json'),JSON.stringify(publishStats(post.publish),null,2)+'\n');
+ }
  fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({schemaVersion:1,globalFingerprint,pages:specs,renderedPages:[...selected],baseVersion:base?path.basename(base):null,automatedChecks:checks,visualReview:'required; not performed by this script'},null,2)+'\n');
  return {out,pages:specs.length,rendered:[...selected]};
 }
