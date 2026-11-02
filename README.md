@@ -6,8 +6,6 @@
 
 定位：**奥地利学习、就业与家庭生活规划咨询**。通过具体、有用、好看的内容吸引了解与交流，在读者主动咨询后如实衔接服务。
 
-`Skill ID：austria-study-career-content` · `版本：1.0.1` · `更新：2026-11-02` · `语言：简体中文`
-
 [效果示例](#showcase) · [核心能力](#capabilities) · [快速使用](#start) · [视觉与页数](#visual) · [来源与知识库](#sources) · [SEO/GEO](#search) · [本地出图](#renderer) · [文件导航](#files)
 
 <a id="showcase"></a>
