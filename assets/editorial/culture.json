@@ -51,12 +51,8 @@
         }
       ],
       "subtitle": "看桌椅、报纸和人的活动，认识空间里的日常。",
-      "image": "media/coffeehouse.png",
+      "image": "media/coffeehouse-details.png",
       "imageHeight": 470,
-      "imageFocus": {
-        "x": 65,
-        "y": 65
-      },
       "imageLabel": "AI 场景示意；文化依据见正文出处",
       "note": "文化条目描述的是一类实践，不代表每家店都相同。"
     },
@@ -100,12 +96,8 @@
         }
       ],
       "subtitle": "不用走完一份打卡清单，也能多理解一点。",
-      "image": "media/coffeehouse.png",
+      "image": "media/coffeehouse-reading.png",
       "imageHeight": 470,
-      "imageFocus": {
-        "x": 35,
-        "y": 60
-      },
       "imageLabel": "AI 场景示意 · 文化解释配图",
       "note": "来源：奥地利 UNESCO 委员会 · 咖啡馆文化条目"
     }

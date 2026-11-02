@@ -115,6 +115,16 @@ test('export all five complete style examples with publishing copy',
  console.log('Complete style examples directory:',dir);
 });
 
+test('editorial example illustrations use distinct source content within each post',()=>{
+ const {createHash}=require('node:crypto');
+ for(const name of ['culture','nursing','family']){
+  const input=path.join(__dirname,'../assets/editorial/'+name+'.json');
+  const source=JSON.parse(fs.readFileSync(input,'utf8'));
+  const hashes=source.pages.filter(p=>p.image).map(p=>createHash('sha256').update(fs.readFileSync(path.resolve(path.dirname(input),p.image))).digest('hex'));
+  assert.equal(new Set(hashes).size,hashes.length,name+' repeats the same source illustration; renaming is not a new scene');
+ }
+});
+
 test('editorial posts export all actual media and portable sources across three content lines',
  {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-editorial-'));

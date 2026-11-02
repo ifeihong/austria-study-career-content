@@ -1,6 +1,6 @@
 {
   "name": "austria-study-career-content",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Local image-text post renderer for the Austria Study & Career Content skill",
   "engines": {

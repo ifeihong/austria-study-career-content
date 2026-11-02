@@ -106,12 +106,8 @@
         }
       ],
       "subtitle": "预算不是一张猜出来的总数，而是一组逐步查清的选择。",
-      "image": "media/family-planning.png",
+      "image": "media/family-discussion.png",
       "imageHeight": 470,
-      "imageFocus": {
-        "x": 50,
-        "y": 70
-      },
       "imageLabel": "AI 家庭情境插画 · 方法说明配图",
       "note": "把缺少依据的项目列成问题，一起决定先查哪一项。"
     }

@@ -6,11 +6,15 @@
 
 品牌定位：**奥地利学习、就业与家庭生活规划咨询**。
 
-`Skill ID: austria-study-career-content` · `版本：1.0.0` · `更新：2026-11-02` · `主要语言：简体中文`
+`Skill ID: austria-study-career-content` · `版本：1.0.1` · `更新：2026-11-02` · `主要语言：简体中文`
 
 [快速开始](#start) · [内容方向](#content) · [参考来源库](#sources) · [五种风格](#styles) · [本地出图](#renderer) · [交付与验证](#validation) · [文件导航](#files)
 
-## V10：把视觉完成度落实到整套图文
+## V10.1：整套视觉统一，配图逐页延伸
+
+同套图文的生成主图不重复使用：延续画风、配色和氛围，根据每页内容生成不同的场景、动作和构图；裁切、镜像或调色不算新图。增加逐页配图清单和整套差异验收。
+
+![同套咖啡馆图文：空间氛围、桌椅与报纸架、阅读动作三张不同配图](docs/images/editorial-sequence.jpg)
 
 ![V10生活文化、护理知识与家庭规划三套图文封面](docs/images/editorial-covers.jpg)
 
