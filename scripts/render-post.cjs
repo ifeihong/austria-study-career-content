@@ -22,13 +22,17 @@ function validatePost(input){
  const ids=new Set();
  for(const p of post.pages){
   need(p&&typeof p==='object'&&!Array.isArray(p),'Each page must be an object');
-  keys(p,['id','title','layout','style','subtitle','eyebrow','note','imageLabel','image','items','columns','rows'],'page');
+  keys(p,['id','title','layout','style','subtitle','eyebrow','note','imageLabel','image','imageFit','imageHeight','imageFocus','items','columns','rows'],'page');
   need(typeof p.id==='string'&&/^[a-z0-9][a-z0-9-]{0,48}$/.test(p.id),'Invalid page ID');
   need(!ids.has(p.id),'Duplicate page ID');ids.add(p.id);
   text(p.title,'page title',true);p.layout??='checklist';need(LAYOUTS.includes(p.layout),'Unknown page layout');
   if(p.style!==undefined)need(STYLES.includes(p.style),'Unknown page style');
   for(const k of ['subtitle','eyebrow','note','imageLabel'])if(p[k]!==undefined)text(p[k],k);
   if(p.image!==undefined){text(p.image,'image',true);need(!/^[a-z]+:/i.test(p.image)&&!path.isAbsolute(p.image)&&!p.image.split(/[\\/]/).includes('..'),'image must be a local relative path without parent traversal');}
+  for(const field of ['imageLabel','imageFit','imageHeight','imageFocus'])if(p[field]!==undefined)need(p.image!==undefined,field+' requires image');
+  if(p.imageFit!==undefined)need(['contain','cover'].includes(p.imageFit),'Invalid imageFit');
+  if(p.imageHeight!==undefined)need(Number.isInteger(p.imageHeight)&&p.imageHeight>=160&&p.imageHeight<=800,'imageHeight must be 160 to 800 pixels');
+  if(p.imageFocus!==undefined){need(p.imageFocus&&typeof p.imageFocus==='object'&&!Array.isArray(p.imageFocus),'imageFocus must be an object');keys(p.imageFocus,['x','y'],'imageFocus');for(const axis of ['x','y'])need(Number.isFinite(p.imageFocus[axis])&&p.imageFocus[axis]>=0&&p.imageFocus[axis]<=100,'imageFocus coordinates must be 0 to 100');}
   p.items??=[];need(Array.isArray(p.items),'items must be an array');
   for(const item of p.items){need(item&&typeof item==='object'&&!Array.isArray(item),'item must be an object');keys(item,['heading','text'],'item');text(item.heading,'item heading',true);if(item.text!==undefined)text(item.text,'item text');}
   if(p.layout!=='table')need(p.columns===undefined&&p.rows===undefined,'columns and rows require table layout');
@@ -49,9 +53,12 @@ function readImage(root,relative){
  return {bytes,mime,data:'data:'+mime+';base64,'+bytes.toString('base64'),extension:path.extname(file).toLowerCase()};
 }
 const CSS=`*{box-sizing:border-box}body{margin:0;background:#e8e5dd;color:#21372f;font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif}.page{--bg:#f7f3e9;--ink:#21372f;--accent:#cd5b30;width:1080px;height:1440px;padding:64px 72px 42px;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;gap:27px;overflow:hidden}.style-S2{--bg:#f9e9d8}.style-S3{--bg:#edf0eb}.style-S4{--bg:#e9ede8}.style-S5{--bg:#f4f3e5}.eyebrow{font-size:27px;line-height:1.5;color:var(--ink);opacity:.7;border-bottom:2px solid #b8b6a660;padding-bottom:20px}h1{font-size:75px;line-height:1.25;letter-spacing:-1px;white-space:pre-line;overflow-wrap:anywhere;margin:24px 0 0}h1.cover-title{font-size:92px}.subtitle{font-size:34px;line-height:1.6;margin:20px 0 0;white-space:pre-line}.body{flex:1;min-height:0;overflow:hidden}.media{margin:0 0 24px}.media img{display:block;width:100%;height:330px;object-fit:contain}.style-S2 .media img,.style-S3 .media img{object-fit:cover}.cover.has-image .items{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.cover.has-image .item{padding:16px 0}.cover.has-image .item h2{font-size:30px}.cover.has-image .item p{font-size:31px}.media figcaption{font-size:26px;line-height:1.5;margin-top:10px;opacity:.72}.item{border-bottom:2px solid #b8b6a660;padding:23px 0}.item h2{font-size:39px;line-height:1.45;margin:0;white-space:pre-line}.item p{font-size:33px;line-height:1.65;margin:12px 0 0;white-space:pre-line;overflow-wrap:anywhere}.steps .item{padding-left:85px;position:relative}.number{position:absolute;left:0;top:25px;font-size:36px;font-weight:700;color:var(--accent)}.split .items{display:grid;grid-template-columns:1fr 1fr;gap:0 28px}.note{border-left:7px solid var(--accent);padding:13px 0 13px 24px;font-size:30px;line-height:1.7;margin-top:27px;white-space:pre-line}table{width:100%;border-collapse:collapse;font-size:31px;line-height:1.65}th{text-align:left;background:#dce2d55c;padding:21px 14px;font-size:29px}td{padding:24px 14px;border-bottom:2px solid #b8b6a660;white-space:pre-line;overflow-wrap:anywhere}td:first-child{font-weight:700}.foot{flex:none;display:flex;justify-content:space-between;align-items:end;border-top:2px solid #b8b6a660;padding-top:20px;gap:24px;font-size:25px;line-height:1.5}.foot span:last-child{white-space:nowrap}.emoji{font-family:'Segoe UI Emoji',sans-serif}`;
+// Style families vary hierarchy and grouping as well as palette; complex artwork remains external.
+const STYLE_CSS=`.style-S2 .items{display:grid;gap:18px}.style-S2 .item{border:0;border-radius:24px;background:#ffffff70;padding:20px 24px}.style-S2 .item h2{font-size:36px}.style-S2.steps .item{padding-left:92px}.style-S2 .number{left:24px}.style-S3 h1{border-left:10px solid var(--accent);padding-left:26px}.style-S3 .eyebrow{letter-spacing:2px}.style-S3 .item{border-bottom:0;padding:22px 0}.style-S4 th{background:var(--ink);color:var(--bg)}.style-S4 .item{border-left:4px solid var(--accent);padding:16px 22px;margin-bottom:18px}.style-S4 .item h2{font-size:36px}.style-S4.steps .item{padding-left:90px}.style-S4 .number{left:20px}.style-S5.steps .item{padding-left:96px;border-bottom:0;border-left:3px solid #b8b6a660}.style-S5 .number{left:16px;top:24px;border:2px solid var(--accent);border-radius:12px;padding:3px 9px;font-size:30px}.style-S5.split .item{border-top:5px solid var(--accent);border-bottom:0;padding-top:24px}`;
 function pageHtml(post,p,index,asset){
  const style=p.style||post.style;const theme=Object.entries(post.theme).map(([k,v])=>'--'+({background:'bg',ink:'ink',accent:'accent'}[k])+':'+v).join(';');
- const media=asset?`<figure class="media"><img alt="${esc(p.imageLabel||'主题素材')}" src="${asset.data}">${p.imageLabel?'<figcaption>'+esc(p.imageLabel)+'</figcaption>':''}</figure>`:'';
+ const framing=[p.imageHeight!==undefined?'height:'+p.imageHeight+'px':'',p.imageFit?'object-fit:'+p.imageFit:'',p.imageFocus?'object-position:'+p.imageFocus.x+'% '+p.imageFocus.y+'%':''].filter(Boolean).join(';');
+ const media=asset?`<figure class="media"><img alt="${esc(p.imageLabel||'主题素材')}" style="${framing}" src="${asset.data}">${p.imageLabel?'<figcaption>'+esc(p.imageLabel)+'</figcaption>':''}</figure>`:'';
  const items=p.items.map((item,i)=>`<div class="item">${p.layout==='steps'?'<span class="number">'+String(i+1).padStart(2,'0')+'</span>':''}<h2>${esc(item.heading)}</h2>${item.text?'<p>'+esc(item.text)+'</p>':''}</div>`).join('');
  const table=p.layout==='table'?`<table><thead><tr>${p.columns.map(c=>'<th>'+esc(c)+'</th>').join('')}</tr></thead><tbody>${p.rows.map(row=>'<tr>'+row.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')}</tbody></table>`:'';
  return `<article class="page style-${style} ${p.layout} ${asset?'has-image':''}" id="page-${p.id}" style="${theme}"><header><div class="eyebrow">${esc(p.eyebrow||post.brand)}</div><h1 class="${p.layout==='cover'?'cover-title':''}">${esc(p.title)}</h1>${p.subtitle?'<p class="subtitle">'+esc(p.subtitle)+'</p>':''}</header><section class="body" data-check-overflow>${media}${table}<div class="items">${items}</div>${p.note?'<div class="note">'+esc(p.note)+'</div>':''}</section><footer class="foot"><span>${esc(post.brand)}</span><span>${String(index+1).padStart(2,'0')} / ${String(post.pages.length).padStart(2,'0')}</span></footer></article>`;
@@ -79,7 +86,7 @@ async function renderPost(options){
   selected=new Set(options.pages);for(const id of selected)need(specs.some(p=>p.id===id),'Unknown selected page ID');
   for(const spec of specs)if(!selected.has(spec.id))need(previous.pages.find(p=>p.id===spec.id).fingerprint===spec.fingerprint,'Unselected page content or image changed; expand revision scope');
  }
- const html='<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>'+esc(post.title)+'</title><style>'+CSS+'</style><body>'+post.pages.map((p,i)=>pageHtml(post,p,i,assets.get(p.id))).join('')+'</body></html>';
+ const html='<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>'+esc(post.title)+'</title><style>'+CSS+STYLE_CSS+'</style><body>'+post.pages.map((p,i)=>pageHtml(post,p,i,assets.get(p.id))).join('')+'</body></html>';
  const {chromium}=loadPlaywright();
  const launch={headless:true};if(options.browser||process.env.BROWSER_EXECUTABLE)launch.executablePath=options.browser||process.env.BROWSER_EXECUTABLE;
  const browser=await chromium.launch(launch);const buffers=new Map();const checks=[];let preview;
@@ -89,6 +96,8 @@ async function renderPost(options){
   await tab.setContent(html);await tab.evaluate(()=>document.fonts.ready);
   need(await tab.locator('img').evaluateAll(images=>images.every(i=>i.complete&&i.naturalWidth>0)),'Image decode failure');
   for(const spec of specs){
+   // Keep the target on a single viewport; long scrolling documents can capture unpainted tiles.
+   await tab.locator('.page').evaluateAll((pages,id)=>{for(const page of pages)page.style.display=page.id==='page-'+id?'flex':'none';},spec.id);
    const el=tab.locator('#page-'+spec.id);
    const check=await el.evaluate(e=>({width:e.clientWidth,height:e.clientHeight,overflow:e.scrollWidth>e.clientWidth+2||e.scrollHeight>e.clientHeight+2||[...e.querySelectorAll('[data-check-overflow]')].some(x=>x.scrollHeight>x.clientHeight+2||x.scrollWidth>x.clientWidth+2)}));
    need(!check.overflow,'Layout overflow on page '+spec.id+'; shorten or split content');

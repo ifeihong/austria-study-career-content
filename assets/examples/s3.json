@@ -1,0 +1,74 @@
+{
+  "title": "认识维也纳，从咖啡馆的小细节开始",
+  "style": "S3",
+  "publish": {
+    "title": "认识维也纳，从咖啡馆的小细节开始",
+    "body": "有时认识一种文化，可以先看空间里不起眼的物件。奥地利 UNESCO 委员会的咖啡馆文化条目介绍了桌椅与报纸桌等要素。它们是文化线索，不代表每家店都一样。\n\n来源：奥地利 UNESCO 委员会 Viennese coffee house culture，2026-11-02 阅读。https://www.unesco.at/en/culture/intangible-cultural-heritage/inventory/element/article/viennese-coffee-house-culture\n\n如果有一段咖啡时间，你更想看书还是聊天？",
+    "topics": [
+      "维也纳",
+      "咖啡馆文化",
+      "奥地利文化"
+    ]
+  },
+  "pages": [
+    {
+      "id": "cover",
+      "title": "一张桌子\n也能讲文化",
+      "layout": "cover",
+      "items": [
+        {
+          "heading": "认识维也纳",
+          "text": "从咖啡馆里的小细节开始。"
+        }
+      ]
+    },
+    {
+      "id": "objects",
+      "title": "先看空间里的物件",
+      "layout": "checklist",
+      "items": [
+        {
+          "heading": "桌椅",
+          "text": "看一看它们怎样组织空间。"
+        },
+        {
+          "heading": "报纸桌",
+          "text": "一个小物件，也能成为认识文化的入口。"
+        }
+      ],
+      "note": "文化要素依据：奥地利 UNESCO 委员会条目。"
+    },
+    {
+      "id": "meaning",
+      "title": "再想想你会做什么",
+      "layout": "split",
+      "items": [
+        {
+          "heading": "读一会儿书",
+          "text": "把注意力留给文字。"
+        },
+        {
+          "heading": "聊一个话题",
+          "text": "让一段空闲有具体内容。"
+        }
+      ],
+      "note": "活动偏好讨论，不是现场体验或店铺测评。"
+    },
+    {
+      "id": "preference",
+      "title": "你想怎样度过这段时间？",
+      "layout": "checklist",
+      "items": [
+        {
+          "heading": "安静一点",
+          "text": "看书、观察，或只是放慢节奏。"
+        },
+        {
+          "heading": "有人一起",
+          "text": "和家人朋友聊聊最近的事。"
+        }
+      ],
+      "note": "出处：奥地利 UNESCO 委员会；阅读于 2026-11-02。"
+    }
+  ]
+}

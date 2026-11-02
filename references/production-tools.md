@@ -45,6 +45,11 @@ node scripts/render-post.cjs --input assets/post-example.json --out output/budge
 | 内容条目 | `items` 数组，每项有 heading 和可选 text |
 | 表格 | table 布局需 columns 与 rows，每行单元格数等于列数，单元格为文字 |
 | 图片 | `image` 为相对 JSON 文件的本地 PNG/JPEG/WebP 路径；`imageLabel` 为成图标识或说明 |
+| 图片适配 | 可选 `imageFit` 为 contain（完整呈现）或 cover（填充裁切）；`imageHeight` 为 160—800 的整数像素；`imageFocus` 为 x/y 两个 0—100 的百分比坐标 |
+
+`imageLabel` 和适配字段必须同时有 `image`，否则报错，避免说明静默丢失。需要保留证据全貌时先选 contain；cover 用于允许裁切的情境图，焦点控制不替代成图检查。增加图片高度后仍可能溢出，应调整版面或拆页，不隐藏内容。
+
+五种完整基础示例见 [示例说明](../assets/examples/README.md)。配图可选，不依赖自有实拍；内置脚本不自动取图或生成 AI 图。
 
 图片应放在 JSON 同目录或子目录，不接受网络 URL、绝对路径与向上跳转，也不接受逃出输入目录的符号链接。授权素材可先复制到该项目的 media 子目录。该工具不能把私有素材自动上传。
 
@@ -67,6 +72,8 @@ node scripts/render-post.cjs --input assets/post-example.json --out output/budge
 输出：images/、preview.jpg、source/post.html、source/post.json、必要的 source/media/、manifest.json，以及可选的 publish.md。HTML 内嵌图片，可直接浏览；JSON 与复制的媒体支持再次渲染。
 
 工具检查图片解码、页面和正文区域溢出，发现过密内容时拒绝导出，不静默缩字或截断。只在全部页面通过上述检查后创建新版本目录。导出期间发生磁盘写入错误时可能留下不完整目录，不能将其交付为成品；应检查后换新版本重试。
+
+导出时逐页隔离到单页视口，减少长文档滚动截图出现局部未绘制的风险。基础示例测试另核对标题与页脚区域确有深色内容像素；该测试只适用于这些浅底示例，不能普遍证明每篇的文字、语义和版式正确。
 
 仍须逐张目视检查字体、emoji、内容语义、裁切和对比度，并检查预览。工具不判断政策真伪，不做真机与平台上传测试，不把自动检查标为视觉审核完成。
 

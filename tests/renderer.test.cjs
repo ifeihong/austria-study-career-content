@@ -31,6 +31,15 @@ test('reject misspelled or layout-incompatible fields instead of silently droppi
  const d=post();d.pages[0].items[0].body='不能漏掉的正文';assert.throws(()=>validatePost(d),/body/);
 });
 
+test('validate image-dependent captions and explicit image framing',()=>{
+ const a=post();a.pages[0].imageLabel='不得遗漏的说明';assert.throws(()=>validatePost(a),/image/i);
+ const b=post();b.pages[0].image='media.png';b.pages[0].imageFit='contain';b.pages[0].imageHeight=400;b.pages[0].imageFocus={x:25,y:60};
+ assert.equal(validatePost(b).pages[0].imageFocus.x,25);
+ for(const [field,value] of [['imageFit','stretch'],['imageHeight',0],['imageFocus',{x:101,y:50}],['imageFocus',{x:50,y:50,z:1}]]){
+  const c=structuredClone(b);c.pages[0][field]=value;assert.throws(()=>validatePost(c),/image/i);
+ }
+});
+
 test('render full post, preserve unselected pages and reject unsafe partial revision',
  {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-render-test-'));
@@ -61,11 +70,40 @@ test('render full post, preserve unselected pages and reject unsafe partial revi
  const huge=post();huge.pages[0].items=Array.from({length:40},()=>({heading:'过多信息',text:'此页应拆分，而非截断。'}));fs.writeFileSync(config,JSON.stringify(huge));
  const d=path.join(dir,'overflow');await assert.rejects(renderPost({input:config,out:d}),/overflow/i);assert.equal(fs.existsSync(d),false);
  const withImage=post();withImage.pages[0].image='media.png';withImage.pages[0].imageLabel='测试排版素材';
+ withImage.pages[0].imageFit='contain';withImage.pages[0].imageHeight=400;withImage.pages[0].imageFocus={x:25,y:60};
  fs.copyFileSync(path.join(a,m1.pages[0].file),path.join(dir,'media.png'));
  fs.writeFileSync(config,JSON.stringify(withImage));const imageOut=path.join(dir,'with-image');await renderPost({input:config,out:imageOut});
  assert.deepEqual(fs.readFileSync(path.join(imageOut,'source/media/cover.png')),fs.readFileSync(path.join(dir,'media.png')));
+ assert.match(fs.readFileSync(path.join(imageOut,'source/post.html'),'utf8'),/height:400px;object-fit:contain;object-position:25% 60%/);
  await renderPost({input:path.join(imageOut,'source/post.json'),out:path.join(dir,'portable-rerender')});
  fs.copyFileSync(path.join(a,m1.pages[1].file),path.join(dir,'media.png'));
  await assert.rejects(renderPost({input:config,out:path.join(dir,'image-change'),base:imageOut,pages:['list']}),/unselected/i);
  console.log('Renderer evidence directory:',dir);
+});
+
+test('export all five complete style examples with publishing copy',
+ {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-style-examples-'));
+ const {chromium}=require(process.env.PLAYWRIGHT_MODULE_PATH||'playwright');
+ const launch={headless:true};if(process.env.BROWSER_EXECUTABLE)launch.executablePath=process.env.BROWSER_EXECUTABLE;
+ const browser=await chromium.launch(launch);const tab=await browser.newPage();
+ try{
+ for(const style of ['s1','s2','s3','s4','s5']){
+  const out=path.join(dir,style);await renderPost({input:path.join(__dirname,'../assets/examples/'+style+'.json'),out});
+  const manifest=JSON.parse(fs.readFileSync(path.join(out,'manifest.json'),'utf8'));
+  assert.equal(manifest.pages.length,4);assert.ok(fs.readFileSync(path.join(out,'publish.md'),'utf8').includes('# 正文'));
+  for(const p of manifest.pages){
+   const bytes=fs.readFileSync(path.join(out,p.file));assert.equal(bytes.readUInt32BE(16),1080);assert.equal(bytes.readUInt32BE(20),1440);
+   // Uniform light backgrounds in these fixtures let us detect missing rendered text, not just PNG dimensions.
+   const ink=await tab.evaluate(async data=>{
+    const img=new Image();img.src='data:image/png;base64,'+data;await img.decode();
+    const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);
+    const count=(y,h)=>{const d=ctx.getImageData(72,y,936,h).data;let n=0;for(let i=0;i<d.length;i+=4)if(d[i]+d[i+1]+d[i+2]<300&&d[i+3]>250)n++;return n;};
+    return {header:count(100,350),footer:count(1300,120)};
+   },bytes.toString('base64'));
+   assert.ok(ink.header>80,style+'/'+p.id+' missing heading pixels');assert.ok(ink.footer>50,style+'/'+p.id+' missing footer pixels');
+  }
+ }
+ }finally{await browser.close();}
+ console.log('Complete style examples directory:',dir);
 });
