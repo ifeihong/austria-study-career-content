@@ -1,0 +1,113 @@
+{
+  "title": "维也纳咖啡馆，值得看的不止咖啡",
+  "style": "S3",
+  "design": "editorial",
+  "publish": {
+    "title": "维也纳咖啡馆，值得看的不止咖啡",
+    "body": "认识维也纳咖啡馆文化，可以先看空间里的物件：桌椅、报纸桌，以及它们怎样让一段时间有了不同的安排。\n\n奥地利 UNESCO 委员会的文化条目提供了这些观察线索。它描述的是文化要素，不代表每家店都一样。本文配图为 AI 场景示意，不是实拍或某家店的测评。\n\n你会把这段时间留给看书、聊天，还是观察街景？\n\n来源：奥地利 UNESCO 委员会，Viennese coffee house culture。https://www.unesco.at/en/culture/intangible-cultural-heritage/inventory/element/article/viennese-coffee-house-culture",
+    "topics": [
+      "维也纳",
+      "奥地利文化",
+      "咖啡馆文化"
+    ]
+  },
+  "pages": [
+    {
+      "id": "cover",
+      "title": "维也纳咖啡馆\n值得看的不止咖啡",
+      "layout": "poster",
+      "items": [
+        {
+          "heading": "一张桌子",
+          "text": "看看空间怎样被使用"
+        },
+        {
+          "heading": "一份报纸",
+          "text": "留意物件背后的日常"
+        },
+        {
+          "heading": "一段时间",
+          "text": "想想自己会怎样度过"
+        }
+      ],
+      "eyebrow": "生活里的小美好 / 文化观察",
+      "subtitle": "从小物件开始，认识一种生活文化。",
+      "image": "media/coffeehouse.png",
+      "imageLabel": "AI 场景示意 · 非实拍",
+      "imageHeight": 650
+    },
+    {
+      "id": "details",
+      "title": "把视线从杯子\n移到周围",
+      "layout": "feature",
+      "items": [
+        {
+          "heading": "桌椅与空间",
+          "text": "小桌、椅子和报纸桌，都是文化条目提到的线索。"
+        },
+        {
+          "heading": "物件与活动",
+          "text": "它们可以成为观察入口，帮助你提出自己的问题。"
+        }
+      ],
+      "subtitle": "看桌椅、报纸和人的活动，认识空间里的日常。",
+      "image": "media/coffeehouse.png",
+      "imageHeight": 470,
+      "imageFocus": {
+        "x": 65,
+        "y": 65
+      },
+      "imageLabel": "AI 场景示意；文化依据见正文出处",
+      "note": "文化条目描述的是一类实践，不代表每家店都相同。"
+    },
+    {
+      "id": "afternoon",
+      "title": "如果有一段空闲\n你想把它留给谁？",
+      "layout": "cards",
+      "items": [
+        {
+          "heading": "留给一本书",
+          "text": "挑一段想读的文字，给自己一点连续的注意力。"
+        },
+        {
+          "heading": "留给一次聊天",
+          "text": "不必讨论大计划，也可以聊最近的一件小事。"
+        },
+        {
+          "heading": "留给街景",
+          "text": "看光线、人和窗外的变化，不急着安排下一站。"
+        },
+        {
+          "heading": "留给好奇心",
+          "text": "想了解一个物件的来历，就从一条可靠出处查起。"
+        }
+      ],
+      "subtitle": "认识文化，也可以从自己的偏好开始。",
+      "note": "一个空闲下午，不必安排得满满当当。"
+    },
+    {
+      "id": "question",
+      "title": "看过一处空间\n记住一个小细节",
+      "layout": "feature",
+      "items": [
+        {
+          "heading": "下次可以这样看",
+          "text": "先选一个物件，再问：它和人的活动有什么关系？"
+        },
+        {
+          "heading": "想听听你的偏好",
+          "text": "如果有这样的咖啡时间，你更想看书，还是聊天？"
+        }
+      ],
+      "subtitle": "不用走完一份打卡清单，也能多理解一点。",
+      "image": "media/coffeehouse.png",
+      "imageHeight": 470,
+      "imageFocus": {
+        "x": 35,
+        "y": 60
+      },
+      "imageLabel": "AI 场景示意 · 文化解释配图",
+      "note": "来源：奥地利 UNESCO 委员会 · 咖啡馆文化条目"
+    }
+  ]
+}

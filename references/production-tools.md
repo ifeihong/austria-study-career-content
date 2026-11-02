@@ -2,7 +2,7 @@
 
 ## 能做什么
 
-`scripts/render-post.cjs` 从本地 JSON 生成独立 PNG、360 像素宽整套预览、发布文案、可编辑 HTML/JSON 与修改记录。支持五种基础配色方向，及 cover、checklist、steps、table、split 五类信息布局，可选本地图片。
+`scripts/render-post.cjs` 从本地 JSON 生成独立 PNG、360 像素宽整套预览、发布文案、可编辑 HTML/JSON 与修改记录。支持五种风格方向、basic 兼容模式与 editorial 制作模式。正式设计资源见 [V10 样稿](../assets/editorial/README.md)，可选本地图片。
 
 这是一套稳定起点，不是对五张风格 DEMO 的逐像素复刻。复杂的实景叠字、自由构图和艺术设计仍可使用其他排版工具，最终检查标准相同。脚本不负责 AI 图片生成，也不会联网下载素材。
 
@@ -19,37 +19,37 @@
 在仓库根目录运行：
 
 ```sh
-node scripts/render-post.cjs --input assets/post-example.json --out output/budget-v01
+node scripts/render-post.cjs --input assets/editorial/family.json --out output/family-editorial-v01
 ```
 
 如默认浏览器不可用，使用实际存在的可执行文件：
 
 ```sh
-node scripts/render-post.cjs --input assets/post-example.json --out output/budget-v01 --browser /actual/path/to/browser
+node scripts/render-post.cjs --input assets/editorial/family.json --out output/family-editorial-v01 --browser /actual/path/to/browser
 ```
 
 上面的浏览器路径是需替换的示意值。输出目录必须不存在；使用新版本目录，避免覆盖已确认内容。
 
 ## 输入字段
 
-参考 [可执行示例](../assets/post-example.json)。字段中的文本全部转义后排版，不接受 HTML 或 CSS 片段。
+参考 [正式示例](../assets/editorial/family.json)。字段中的文本全部转义后排版，不接受 HTML 或 CSS 片段。
 
 输入使用 UTF-8 JSON，支持 Windows 编辑器可能附带的 UTF-8 BOM。字段名严格按下表填写，未知字段或在非 table 页面填写 columns/rows 会报错，避免拼写错误导致内容静默遗漏。内部来源记录、提示词与审核状态另存文件，不向排版 JSON 任意加字段。
 
 | 层级 | 字段与含义 |
 |---|---|
-| 全局 | `title` 文档名称；`brand` 品牌署名，默认既定品牌；`style` 为 S1—S5；可选 `theme` 的 background、ink、accent 为六位十六进制颜色 |
+| 全局 | `design` 为 basic 或 editorial，省略时保留 basic 兼容行为；正式图文显式采用 editorial 或自定义设计；`title` 文档名称；`brand` 品牌署名，默认既定品牌；`style` 为 S1—S5；可选 `theme` 的 background、ink、accent 为六位十六进制颜色 |
 | 发布文案 | 可选 `publish`，含 title、body、topics 数组；存在时输出 publish.md，否则只是图片制作任务，不是完整发布包 |
 | 页面 | `pages` 数组；每页必须有唯一的英文小写字母、数字及连字符 `id`，以及非空 `title` |
-| 页面排版 | `layout` 为 cover、checklist、steps、table、split；可选页级 style、eyebrow、subtitle、note |
+| 页面排版 | `layout` 的基础值为 cover、checklist、steps、table、split；editorial 模式另支持 poster、feature、cards、worksheet、journey；可选页级 style、eyebrow、subtitle、note |
 | 内容条目 | `items` 数组，每项有 heading 和可选 text |
-| 表格 | table 布局需 columns 与 rows，每行单元格数等于列数，单元格为文字 |
+| 表格 | table/worksheet 布局需 columns 与 rows，每行单元格数等于列数，单元格为文字 |
 | 图片 | `image` 为相对 JSON 文件的本地 PNG/JPEG/WebP 路径；`imageLabel` 为成图标识或说明 |
 | 图片适配 | 可选 `imageFit` 为 contain（完整呈现）或 cover（填充裁切）；`imageHeight` 为 160—800 的整数像素；`imageFocus` 为 x/y 两个 0—100 的百分比坐标 |
 
 `imageLabel` 和适配字段必须同时有 `image`，否则报错，避免说明静默丢失。需要保留证据全貌时先选 contain；cover 用于允许裁切的情境图，焦点控制不替代成图检查。增加图片高度后仍可能溢出，应调整版面或拆页，不隐藏内容。
 
-五种完整基础示例见 [示例说明](../assets/examples/README.md)。配图可选，不依赖自有实拍；内置脚本不自动取图或生成 AI 图。
+正式图文从 [V10 图片设计资源](../assets/editorial/README.md) 开始。poster/feature 是图片主导页面，必须提供本地 image；其他角色按内容选图。旧 [基础示例](../assets/examples/README.md) 保留为回归/极简测试，不是正式图文默认设计。内置脚本不自动取图或生成 AI 图。
 
 图片应放在 JSON 同目录或子目录，不接受网络 URL、绝对路径与向上跳转，也不接受逃出输入目录的符号链接。授权素材可先复制到该项目的 media 子目录。该工具不能把私有素材自动上传。
 
@@ -60,7 +60,7 @@ node scripts/render-post.cjs --input assets/post-example.json --out output/budge
 修改 JSON 中目标页，保持其他页与全局设置不变，然后执行：
 
 ```sh
-node scripts/render-post.cjs --input assets/post-example.json --out output/budget-v02 --base output/budget-v01 --pages once
+node scripts/render-post.cjs --input assets/editorial/family.json --out output/family-editorial-v02 --base output/family-editorial-v01 --pages assumptions
 ```
 
 `--pages` 采用页面 ID，可用逗号列多页。工具核对渲染器版本摘要、页序、全局设置、每页文字和图片内容摘要；未选页变化则拒绝局部更新。未修改图片直接复制并校验 SHA-256，不重新生成。

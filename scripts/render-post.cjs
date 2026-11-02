@@ -3,7 +3,8 @@ const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
 const STYLES=['S1','S2','S3','S4','S5'];
-const LAYOUTS=['cover','checklist','steps','table','split'];
+const LAYOUTS=['cover','checklist','steps','table','split','poster','feature','cards','worksheet','journey'];
+const EDITORIAL_LAYOUTS=['poster','feature','cards','worksheet','journey'];
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
 function need(ok,message){if(!ok)throw new Error(message);}
@@ -12,10 +13,11 @@ function keys(value,allowed,label){for(const key of Object.keys(value))need(allo
 function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}
 function validatePost(input){
  need(input&&typeof input==='object'&&!Array.isArray(input),'Post must be an object');
- keys(input,['title','brand','style','theme','pages','publish'],'post');
+ keys(input,['title','brand','style','theme','design','pages','publish'],'post');
  const post=structuredClone(input);text(post.title,'title',true);
  post.brand??='奥地利求学就业桔';text(post.brand,'brand',true);
  post.style??='S1';need(STYLES.includes(post.style),'Unknown global style');
+ post.design??='basic';need(['basic','editorial'].includes(post.design),'Unknown design mode');
  post.theme??={};need(post.theme&&typeof post.theme==='object'&&!Array.isArray(post.theme),'theme must be an object');
  for(const [k,v] of Object.entries(post.theme))need(['background','ink','accent'].includes(k)&&typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v),'Invalid theme color');
  need(Array.isArray(post.pages)&&post.pages.length>0,'pages must be a nonempty array');
@@ -26,6 +28,8 @@ function validatePost(input){
   need(typeof p.id==='string'&&/^[a-z0-9][a-z0-9-]{0,48}$/.test(p.id),'Invalid page ID');
   need(!ids.has(p.id),'Duplicate page ID');ids.add(p.id);
   text(p.title,'page title',true);p.layout??='checklist';need(LAYOUTS.includes(p.layout),'Unknown page layout');
+  if(EDITORIAL_LAYOUTS.includes(p.layout))need(post.design==='editorial','Editorial layout requires editorial design');
+  if(['poster','feature'].includes(p.layout))need(p.image!==undefined,'Image-led layout requires image');
   if(p.style!==undefined)need(STYLES.includes(p.style),'Unknown page style');
   for(const k of ['subtitle','eyebrow','note','imageLabel'])if(p[k]!==undefined)text(p[k],k);
   if(p.image!==undefined){text(p.image,'image',true);need(!/^[a-z]+:/i.test(p.image)&&!path.isAbsolute(p.image)&&!p.image.split(/[\\/]/).includes('..'),'image must be a local relative path without parent traversal');}
@@ -35,8 +39,8 @@ function validatePost(input){
   if(p.imageFocus!==undefined){need(p.imageFocus&&typeof p.imageFocus==='object'&&!Array.isArray(p.imageFocus),'imageFocus must be an object');keys(p.imageFocus,['x','y'],'imageFocus');for(const axis of ['x','y'])need(Number.isFinite(p.imageFocus[axis])&&p.imageFocus[axis]>=0&&p.imageFocus[axis]<=100,'imageFocus coordinates must be 0 to 100');}
   p.items??=[];need(Array.isArray(p.items),'items must be an array');
   for(const item of p.items){need(item&&typeof item==='object'&&!Array.isArray(item),'item must be an object');keys(item,['heading','text'],'item');text(item.heading,'item heading',true);if(item.text!==undefined)text(item.text,'item text');}
-  if(p.layout!=='table')need(p.columns===undefined&&p.rows===undefined,'columns and rows require table layout');
-  if(p.layout==='table'){
+  if(!['table','worksheet'].includes(p.layout))need(p.columns===undefined&&p.rows===undefined,'columns and rows require table or worksheet layout');
+  if(['table','worksheet'].includes(p.layout)){
    need(Array.isArray(p.columns)&&p.columns.length>0,'table columns required');p.columns.forEach(v=>text(v,'column',true));
    need(Array.isArray(p.rows),'table rows required');
    for(const row of p.rows){need(Array.isArray(row)&&row.length===p.columns.length,'Row must match table column count');row.forEach(v=>text(v,'cell'));}
@@ -55,13 +59,59 @@ function readImage(root,relative){
 const CSS=`*{box-sizing:border-box}body{margin:0;background:#e8e5dd;color:#21372f;font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif}.page{--bg:#f7f3e9;--ink:#21372f;--accent:#cd5b30;width:1080px;height:1440px;padding:64px 72px 42px;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;gap:27px;overflow:hidden}.style-S2{--bg:#f9e9d8}.style-S3{--bg:#edf0eb}.style-S4{--bg:#e9ede8}.style-S5{--bg:#f4f3e5}.eyebrow{font-size:27px;line-height:1.5;color:var(--ink);opacity:.7;border-bottom:2px solid #b8b6a660;padding-bottom:20px}h1{font-size:75px;line-height:1.25;letter-spacing:-1px;white-space:pre-line;overflow-wrap:anywhere;margin:24px 0 0}h1.cover-title{font-size:92px}.subtitle{font-size:34px;line-height:1.6;margin:20px 0 0;white-space:pre-line}.body{flex:1;min-height:0;overflow:hidden}.media{margin:0 0 24px}.media img{display:block;width:100%;height:330px;object-fit:contain}.style-S2 .media img,.style-S3 .media img{object-fit:cover}.cover.has-image .items{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.cover.has-image .item{padding:16px 0}.cover.has-image .item h2{font-size:30px}.cover.has-image .item p{font-size:31px}.media figcaption{font-size:26px;line-height:1.5;margin-top:10px;opacity:.72}.item{border-bottom:2px solid #b8b6a660;padding:23px 0}.item h2{font-size:39px;line-height:1.45;margin:0;white-space:pre-line}.item p{font-size:33px;line-height:1.65;margin:12px 0 0;white-space:pre-line;overflow-wrap:anywhere}.steps .item{padding-left:85px;position:relative}.number{position:absolute;left:0;top:25px;font-size:36px;font-weight:700;color:var(--accent)}.split .items{display:grid;grid-template-columns:1fr 1fr;gap:0 28px}.note{border-left:7px solid var(--accent);padding:13px 0 13px 24px;font-size:30px;line-height:1.7;margin-top:27px;white-space:pre-line}table{width:100%;border-collapse:collapse;font-size:31px;line-height:1.65}th{text-align:left;background:#dce2d55c;padding:21px 14px;font-size:29px}td{padding:24px 14px;border-bottom:2px solid #b8b6a660;white-space:pre-line;overflow-wrap:anywhere}td:first-child{font-weight:700}.foot{flex:none;display:flex;justify-content:space-between;align-items:end;border-top:2px solid #b8b6a660;padding-top:20px;gap:24px;font-size:25px;line-height:1.5}.foot span:last-child{white-space:nowrap}.emoji{font-family:'Segoe UI Emoji',sans-serif}`;
 // Style families vary hierarchy and grouping as well as palette; complex artwork remains external.
 const STYLE_CSS=`.style-S2 .items{display:grid;gap:18px}.style-S2 .item{border:0;border-radius:24px;background:#ffffff70;padding:20px 24px}.style-S2 .item h2{font-size:36px}.style-S2.steps .item{padding-left:92px}.style-S2 .number{left:24px}.style-S3 h1{border-left:10px solid var(--accent);padding-left:26px}.style-S3 .eyebrow{letter-spacing:2px}.style-S3 .item{border-bottom:0;padding:22px 0}.style-S4 th{background:var(--ink);color:var(--bg)}.style-S4 .item{border-left:4px solid var(--accent);padding:16px 22px;margin-bottom:18px}.style-S4 .item h2{font-size:36px}.style-S4.steps .item{padding-left:90px}.style-S4 .number{left:20px}.style-S5.steps .item{padding-left:96px;border-bottom:0;border-left:3px solid #b8b6a660}.style-S5 .number{left:16px;top:24px;border:2px solid var(--accent);border-radius:12px;padding:3px 9px;font-size:30px}.style-S5.split .item{border-top:5px solid var(--accent);border-bottom:0;padding-top:24px}`;
+const EDITORIAL_CSS=`
+.editorial{padding:54px 64px 38px;gap:22px;background:var(--bg)}
+.editorial .eyebrow{font-size:25px;letter-spacing:2px;padding-bottom:17px;border-bottom:2px solid #21372f25}
+.editorial h1{font-size:70px;line-height:1.18;letter-spacing:-2px;margin-top:26px;border:0;padding:0;font-weight:800}
+.editorial .subtitle{font-size:33px;line-height:1.55;margin-top:20px;max-width:880px;opacity:.88}
+.editorial .body{display:flex;flex-direction:column;gap:22px}
+.editorial .items{display:grid;gap:18px}
+.editorial .item{position:relative;padding:26px 28px;border:0;margin:0;background:#ffffff8c;border-radius:20px}
+.editorial .item h2{font-size:36px;line-height:1.35;margin:0}
+.editorial .item p{font-size:31px;line-height:1.65;margin-top:14px}
+.editorial .note{margin:0;padding:22px 26px;border:0;background:var(--ink);color:var(--bg);font-size:29px;line-height:1.6;border-radius:14px}
+.editorial .foot{font-size:24px;border-top:2px solid #21372f25;padding-top:17px}
+.editorial .media{margin:0;flex:none}
+.editorial .media img{border-radius:18px;width:100%;object-fit:cover}
+.editorial .media figcaption{font-size:24px;line-height:1.4;margin-top:8px}
+.editorial.poster h1{font-size:92px;line-height:1.16;max-width:940px;margin-top:28px}
+.editorial.poster .media img{height:550px}
+.editorial.poster .items{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.editorial.poster .item{background:transparent;border-radius:0;padding:22px 0 0;border-top:3px solid var(--accent)}
+.editorial.poster .item h2{font-size:30px}
+.editorial.poster .item p{font-size:28px;margin-top:9px;line-height:1.5}
+.editorial.poster .note{font-size:28px;padding:15px 22px}
+.editorial.cards .items{grid-template-columns:repeat(2,minmax(0,1fr));flex:1;grid-auto-rows:1fr;gap:24px}
+.editorial.cards .item{padding:38px 32px;border-top:7px solid var(--accent);display:flex;flex-direction:column;justify-content:center;background:#ffffffa8}
+.editorial.cards .item h2{font-size:42px}
+.editorial.cards .item p{font-size:33px;line-height:1.7}
+.editorial.cards .item:nth-child(2),.editorial.cards .item:nth-child(3){background:#21372f0b}
+.editorial.feature .media img{height:380px}
+.editorial.feature .items{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.editorial.feature .item{padding:25px 28px;border-left:5px solid var(--accent)}
+.editorial.feature .item h2{font-size:35px}
+.editorial.feature .item p{font-size:30px;line-height:1.6}
+.editorial.worksheet table{font-size:32px;line-height:1.7;table-layout:fixed;flex:1}
+.editorial.worksheet th{background:var(--ink);color:var(--bg);font-size:29px;padding:22px 23px}
+.editorial.worksheet th:first-child{width:28%}
+.editorial.worksheet td{padding:28px 23px;vertical-align:middle;background:#ffffff80;border-bottom:2px solid #21372f20}
+.editorial.worksheet td:first-child{width:28%;color:var(--accent)}
+.editorial.worksheet .item{padding:22px 28px}
+.editorial.journey .items{flex:1;gap:22px}
+.editorial.journey .item{padding:30px 32px 30px 115px;display:flex;flex-direction:column;justify-content:center;background:#ffffffad;border-radius:18px}
+.editorial.journey .number{left:26px;top:32px;font-size:43px;line-height:1.3;padding:0;border:0;color:var(--accent);font-weight:800}
+.editorial.journey .item h2{font-size:40px}
+.editorial.journey .item p{font-size:32px;line-height:1.6}
+.editorial.split .items{grid-template-columns:1fr 1fr;flex:1}
+.editorial.checklist .items,.editorial.steps .items{flex:1}
+`;
 function pageHtml(post,p,index,asset){
  const style=p.style||post.style;const theme=Object.entries(post.theme).map(([k,v])=>'--'+({background:'bg',ink:'ink',accent:'accent'}[k])+':'+v).join(';');
  const framing=[p.imageHeight!==undefined?'height:'+p.imageHeight+'px':'',p.imageFit?'object-fit:'+p.imageFit:'',p.imageFocus?'object-position:'+p.imageFocus.x+'% '+p.imageFocus.y+'%':''].filter(Boolean).join(';');
  const media=asset?`<figure class="media"><img alt="${esc(p.imageLabel||'主题素材')}" style="${framing}" src="${asset.data}">${p.imageLabel?'<figcaption>'+esc(p.imageLabel)+'</figcaption>':''}</figure>`:'';
- const items=p.items.map((item,i)=>`<div class="item">${p.layout==='steps'?'<span class="number">'+String(i+1).padStart(2,'0')+'</span>':''}<h2>${esc(item.heading)}</h2>${item.text?'<p>'+esc(item.text)+'</p>':''}</div>`).join('');
- const table=p.layout==='table'?`<table><thead><tr>${p.columns.map(c=>'<th>'+esc(c)+'</th>').join('')}</tr></thead><tbody>${p.rows.map(row=>'<tr>'+row.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')}</tbody></table>`:'';
- return `<article class="page style-${style} ${p.layout} ${asset?'has-image':''}" id="page-${p.id}" style="${theme}"><header><div class="eyebrow">${esc(p.eyebrow||post.brand)}</div><h1 class="${p.layout==='cover'?'cover-title':''}">${esc(p.title)}</h1>${p.subtitle?'<p class="subtitle">'+esc(p.subtitle)+'</p>':''}</header><section class="body" data-check-overflow>${media}${table}<div class="items">${items}</div>${p.note?'<div class="note">'+esc(p.note)+'</div>':''}</section><footer class="foot"><span>${esc(post.brand)}</span><span>${String(index+1).padStart(2,'0')} / ${String(post.pages.length).padStart(2,'0')}</span></footer></article>`;
+ const items=p.items.map((item,i)=>`<div class="item">${['steps','journey'].includes(p.layout)?'<span class="number">'+String(i+1).padStart(2,'0')+'</span>':''}<h2>${esc(item.heading)}</h2>${item.text?'<p>'+esc(item.text)+'</p>':''}</div>`).join('');
+ const table=['table','worksheet'].includes(p.layout)?`<table><thead><tr>${p.columns.map(c=>'<th>'+esc(c)+'</th>').join('')}</tr></thead><tbody>${p.rows.map(row=>'<tr>'+row.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')}</tbody></table>`:'';
+ return `<article class="page style-${style} ${post.design==='editorial'?'editorial':''} ${p.layout} ${asset?'has-image':''}" id="page-${p.id}" style="${theme}"><header><div class="eyebrow">${esc(p.eyebrow||post.brand)}</div><h1 class="${p.layout==='cover'?'cover-title':''}">${esc(p.title)}</h1>${p.subtitle?'<p class="subtitle">'+esc(p.subtitle)+'</p>':''}</header><section class="body" data-check-overflow>${media}${table}${p.items.length?'<div class="items">'+items+'</div>':''}${p.note?'<div class="note">'+esc(p.note)+'</div>':''}</section><footer class="foot"><span>${esc(post.brand)}</span><span>${String(index+1).padStart(2,'0')} / ${String(post.pages.length).padStart(2,'0')}</span></footer></article>`;
 }
 function loadPlaywright(){
  try{return require(process.env.PLAYWRIGHT_MODULE_PATH||'playwright');}
@@ -86,7 +136,7 @@ async function renderPost(options){
   selected=new Set(options.pages);for(const id of selected)need(specs.some(p=>p.id===id),'Unknown selected page ID');
   for(const spec of specs)if(!selected.has(spec.id))need(previous.pages.find(p=>p.id===spec.id).fingerprint===spec.fingerprint,'Unselected page content or image changed; expand revision scope');
  }
- const html='<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>'+esc(post.title)+'</title><style>'+CSS+STYLE_CSS+'</style><body>'+post.pages.map((p,i)=>pageHtml(post,p,i,assets.get(p.id))).join('')+'</body></html>';
+ const html='<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>'+esc(post.title)+'</title><style>'+CSS+STYLE_CSS+EDITORIAL_CSS+'</style><body>'+post.pages.map((p,i)=>pageHtml(post,p,i,assets.get(p.id))).join('')+'</body></html>';
  const {chromium}=loadPlaywright();
  const launch={headless:true};if(options.browser||process.env.BROWSER_EXECUTABLE)launch.executablePath=options.browser||process.env.BROWSER_EXECUTABLE;
  const browser=await chromium.launch(launch);const buffers=new Map();const checks=[];let preview;

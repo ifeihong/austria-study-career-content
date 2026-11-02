@@ -40,6 +40,13 @@ test('validate image-dependent captions and explicit image framing',()=>{
  }
 });
 
+test('editorial layouts require an intentional design and real local image for image-led pages',()=>{
+ const a=post();a.design='unknown';assert.throws(()=>validatePost(a),/design/i);
+ const b=post();b.design='editorial';b.pages[0].layout='poster';assert.throws(()=>validatePost(b),/image/i);
+ b.pages[0].image='media.png';assert.equal(validatePost(b).pages[0].layout,'poster');
+ const c=post();c.design='editorial';c.pages[3].layout='worksheet';assert.equal(validatePost(c).pages[3].rows.length,1);
+});
+
 test('render full post, preserve unselected pages and reject unsafe partial revision',
  {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-render-test-'));
@@ -106,4 +113,22 @@ test('export all five complete style examples with publishing copy',
  }
  }finally{await browser.close();}
  console.log('Complete style examples directory:',dir);
+});
+
+test('editorial posts export all actual media and portable sources across three content lines',
+ {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-editorial-'));
+ for(const name of ['culture','nursing','family']){
+  const input=path.join(__dirname,'../assets/editorial/'+name+'.json'),out=path.join(dir,name);
+  await renderPost({input,out});
+  const source=JSON.parse(fs.readFileSync(path.join(out,'source/post.json'),'utf8'));
+  const manifest=JSON.parse(fs.readFileSync(path.join(out,'manifest.json'),'utf8'));
+  assert.equal(source.design,'editorial');assert.equal(source.pages.length,4);
+  assert.ok(new Set(manifest.pages.map(p=>p.sha256)).size===4,'Each editorial page must be a distinct exported image');
+  for(const page of source.pages)if(page.image)assert.ok(fs.statSync(path.join(out,'source',page.image)).size>0);
+  for(const page of manifest.pages){const png=fs.readFileSync(path.join(out,page.file));assert.equal(png.readUInt32BE(16),1080);assert.equal(png.readUInt32BE(20),1440);}
+  assert.ok(fs.existsSync(path.join(out,'publish.md')));
+  if(name==='nursing')await renderPost({input:path.join(out,'source/post.json'),out:path.join(dir,'portable-nursing')});
+ }
+ console.log('Editorial validation directory:',dir);
 });

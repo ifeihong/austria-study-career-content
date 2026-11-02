@@ -6,9 +6,17 @@
 
 品牌定位：**奥地利学习、就业与家庭生活规划咨询**。
 
-`Skill ID: austria-study-career-content` · `版本：0.9.2` · `更新：2026-11-02` · `主要语言：简体中文`
+`Skill ID: austria-study-career-content` · `版本：1.0.0` · `更新：2026-11-02` · `主要语言：简体中文`
 
 [快速开始](#start) · [内容方向](#content) · [参考来源库](#sources) · [五种风格](#styles) · [本地出图](#renderer) · [交付与验证](#validation) · [文件导航](#files)
+
+## V10：把视觉完成度落实到整套图文
+
+![V10生活文化、护理知识与家庭规划三套图文封面](docs/images/editorial-covers.jpg)
+
+正式制作改用图片与信息共同编排的设计方法，新增三套完整样稿（每套四页），配实际 AI 图片、正文、话题、预览与可编辑源。封面、图片解释、对照、工作表和步骤页有不同任务。旧基础文字示例降为技术回归，不再作为品牌正式图文的默认视觉起点。
+
+这些图片是 AI 场景/插画，不是实拍或客户案例；正文事实另有出处。查看 [正式设计资源](assets/editorial/README.md) 与 [视觉制作规范](references/visual-production.md)。
 
 ## 适合怎样的内容团队？
 
@@ -102,7 +110,7 @@
 
 ![奥地利求学就业桔小红书五种视觉方向：清单、生活插画、实景编辑、材料解读、路线比较](docs/images/style-comparison.jpg)
 
-V9 新增每种四页的 [完整基础输入示例](assets/examples/README.md)，均包含发布文案，不依赖自有实拍或客户案例。
+V10 的正式设计起点是 [三套有实际配图的完整样稿](assets/editorial/README.md)。以下五类基础输入保留作回归与极简测试，不再自动当作正式成品。
 
 | 风格 | 完整示例 | 主要表达 |
 |---|---|---|
@@ -114,7 +122,7 @@ V9 新增每种四页的 [完整基础输入示例](assets/examples/README.md)�
 
 S2/S3 的完整基础示例采用无配图版本；需要插画或实景效果时，另加入实际 AI 成图或授权素材。基础编排与原封面艺术设计是不同验证对象，不能称为五套复杂艺术模板已全部完成。
 
-工具按风格调整分组、层级、表格和节点，不只换底色。页数由内容决定；四页仅是这组示例的长度。插画和 emoji 适度使用，不能挤占正文与条件。
+editorial 模式支持图片主导封面、图片解释、对照卡片、工作表和任务步骤，按内容选择组合。页数由内容决定；四页仅是示例长度。插画和 emoji 服务于表达，不能挤占正文与条件；内容单薄时合并或补充，不靠装饰撑页。
 
 <a id="renderer"></a>
 ## 本地图文导出
@@ -125,7 +133,7 @@ S2/S3 的完整基础示例采用无配图版本；需要插画或实景效果�
 
 ```sh
 npm install
-node scripts/render-post.cjs --input assets/examples/s2.json --out output/family-s2-v01
+node scripts/render-post.cjs --input assets/editorial/family.json --out output/family-editorial-v01
 ```
 
 安装会联网获取依赖。已有依赖可用 `PLAYWRIGHT_MODULE_PATH` 指向模块目录，`BROWSER_EXECUTABLE` 或 `--browser` 指向实际存在的 Chrome/Edge；配置保存在本机，不写进公共代码。默认浏览器不存在时，指定已有浏览器或按 Playwright 文档准备。
@@ -135,7 +143,7 @@ node scripts/render-post.cjs --input assets/examples/s2.json --out output/family
 支持 UTF-8 BOM、未知字段报错、溢出拒绝，以及指定页更新。图片的 `imageFit`、`imageHeight`、`imageFocus` 可控制完整呈现、裁切和焦点；图片说明和适配字段必须有对应图片。
 
 ```sh
-node scripts/render-post.cjs --input assets/examples/s2.json --out output/family-s2-v02 --base output/family-s2-v01 --pages preferences
+node scripts/render-post.cjs --input assets/editorial/family.json --out output/family-editorial-v02 --base output/family-editorial-v01 --pages assumptions
 ```
 
 先修改指定页 JSON，再执行局部更新。未选页保持原始图片并核对摘要；改页序、全局设置或升级渲染器需完整导出新版本。输出目录必须不存在。字段和运行细节见 [制作工具指南](references/production-tools.md)。
@@ -145,7 +153,9 @@ node scripts/render-post.cjs --input assets/examples/s2.json --out output/family
 
 交付状态按实际完成程度说明：文案/策划稿、待核验稿、已导出待目视检查、本地发布包检查完成。只要文案时，完成文案就是本次范围，不自动扩大为图片或视频制作。
 
-自动检查涉及输入、解码、溢出、图片保存、源文件迁移和局部更新。五种完整基础示例也纳入浏览器导出测试。运行方式：
+内部流程收拢为：明确任务 → 确认工具/素材 → 查来源与主张 → 初审事实与公开口径 → 成稿与逐页任务 → 整套设计及素材 → 制作 → 内容/视觉分别验收 → 交付记录。明确任务直接执行，不为每一步增加人工审批。
+
+自动检查涉及输入、解码、溢出、图片保存、源文件迁移和局部更新。五种基础回归输入与三套 editorial 图文均纳入浏览器导出测试。运行方式：
 
 ```sh
 npm test
@@ -180,7 +190,8 @@ npm test
 | [生活文化与互动](references/lifestyle-culture-engagement.md) | 长期栏目、正向叙事与自然交流 |
 | [创意指南](references/creative-playbook.md) | 结构、标题与跨平台改编 |
 | [小红书制作](references/xiaohongshu-production.md) / [风格库](references/xiaohongshu-styles.md) | 图片、文案与整套视觉 |
-| [完整基础示例](assets/examples/README.md) / [原五页示例](assets/post-example.json) | 可执行 JSON 与使用说明 |
+| [正式设计资源](assets/editorial/README.md) / [视觉制作规范](references/visual-production.md) | 三套完整样稿、配图、逐页任务与内容/视觉验收 |
+| [基础回归示例](assets/examples/README.md) / [原五页示例](assets/post-example.json) | 技术测试与极简任务，非默认正式视觉 |
 | [制作工具](references/production-tools.md) / [渲染脚本](scripts/render-post.cjs) | 本地出图与版本 |
 | [测试](tests/renderer.test.cjs) | 输入与浏览器验证 |
 | [视频制作](references/video-production.md) | 交付层级、三类脚本与成片检查 |
