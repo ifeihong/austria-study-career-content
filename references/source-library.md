@@ -9,7 +9,7 @@
 - **A1 实质正文可读**：取得具体文章或有实质信息的专题正文，只使用实际读到的部分。
 - **A2 部分可读**：取得主页片段、节目介绍或部分文字；不能当作全文、完整转录或视频已观看。
 
-本库现保留 **11 项可读来源：9 项 A1、2 项 A2**。来源 ID 保持稳定，不因删除入口而重新编号。只有链接、导航、登录页、空壳频道或搜索摘要的，不算可读来源，不纳入数量。
+本库现保留 **21 项可读来源：19 项 A1、2 项 A2**。来源 ID 保持稳定，不因删除入口而重新编号。只有链接、导航、登录页、空壳频道或搜索摘要的，不算可读来源，不纳入数量。
 
 同机构的不同平台不是多个独立证据。页面可读也不表示其资讯实时有效；历史作品适合研究结构和文化背景，时效事实发布前另核对。机构的旅游宣传不能证明长期居住、工作待遇或个人资格。
 
@@ -85,6 +85,90 @@
 
 - [具体中文文章：布鲁克纳与瓦格纳](https://www.bmeia.gv.at/zh/kf-peking/veranstaltungen/detail/bruckner-posting-series-part-4-bruckner-and-wagner)；[中文活动列表](https://www.bmeia.gv.at/zh/kf-peking/veranstaltungen)。状态 **A1：2024-07-14 历史文章实质正文可读**。替代同机构不可读的微博、哔哩哔哩入口。
 - 用途：学习用人物关系解释文化的结构；依据原始文化资料独立选题，不复刻文章。历史文章不是当年活动通知，也不代表本品牌的主办、合作或推荐关系。
+
+## 配额相关居留：内部检索与事实核对
+
+以下保留“配额移民”等市场检索词及正式名称，便于内部找到信息；不是公开营销词库。公开输出仍按 [公开表达规范](public-expression-rules.md) 转换，准确解释限制，不强推路径。新增各项于 2026-11-02 实际取得正文；访问日期不等于规则或数字的适用年份。
+
+### QF01 / 奥地利内政部：不从事有酬活动的定居许可
+
+- [Settlement permit except gainful employment](https://www.bmi.gv.at/312_en/22/start.html)。状态 **A1：英文实质正文可读**；页面显示最后更新为 2025-01-30，金额段落仍标 2025 年。
+- 用途：核对 Niederlassungsbewilligung – ausgenommen Erwerbstätigkeit 的许可性质、一般限制与配额概念。内容切口：“规划长期生活前，为什么先说清工作需求？”
+- 边界：页面中的旧金额不能作本年或下一年门槛；不用定居许可推导工作资格。不照搬到身份收益宣传，也不作为对个人的审批判断。
+
+### QF02 / 奥地利迁移门户：其他定居形式
+
+- [Other forms of settlement](https://www.migration.gv.at/en/types-of-immigration/permanent-immigration/other-forms-of-settlement/)。状态 **A1：英文实质正文可读**；本次页面含 2026 年数字及不同许可的分节。
+- 用途：将生活来源、保险、住宿、不同许可及后续安排分别核对。内容切口：“家庭预算、材料与工作安排为什么不能混成一个条件？”
+- 边界：要读目标许可所在小节，不能把别种许可的工作权利或一般收入数值套来。数字带适用年份，后续长期安排也不能自动推导为跨国无条件就业。
+
+### QF03 / 北京使馆与上海总领馆：年度预约通知
+
+- [北京使馆网站英文正文](https://www.bmeia.gv.at/mn/oeb-peking/reisen-nach-oesterreich/einreise-und-aufenthalt/online-terminreservierung-fuer-die-niederlassungsbewilligung-ausgenommen-erwerbstaetigkeit)、[上海总领馆德文正文](https://www.bmeia.gv.at/gk-shanghai/reisen-nach-oesterreich/einreise-und-aufenthalt/online-terminreservierung-fuer-die-niederlassungsbewilligung-ausgenommen-erwerbstaetigkeit)。状态 **A1：两份 2027 申请批次通知实质正文可读**；合并为一个领区节点来源组，不算相互独立的政策证据。
+- 用途：区分预注册代码、预约、递交和结果。内容切口：“读年度通知，要先找到年份、负责领区和时区。”本库不重复抄录易过期的时间表。
+- 边界：北京页面在 /mn/ 路径下取得英文正文，语言目录不代表申请人领区；具体适用性须查对应机构。领区时间、语言版本或年份冲突按 [历史快照](policy-snapshot-2026-10-30.md) 的冲突提示重新核对，不自行消除差异。预约和代码都不保证配额或获批，本 Skill 不自动代为注册。
+
+## 紧缺职业与护理：内部检索与专业准备
+
+“稀缺人才引进”不是本库假定的统一官方项目名。专业检索使用 Fachkräfte in Mangelberufen / Skilled Workers in Shortage Occupations，并将护理学习、认定、注册、录用及相关许可分开。下列来源共同提供不同环节信息，不能拼接成保证成功的路径。
+
+### NC01 / Nursing in Austria：认定的一般原则与申请
+
+- [Nostrification in general](https://nursinginaustria.at/en/nostrification/nostrification-general)、[Application for nostrification](https://nursinginaustria.at/en/nostrification/application-for-nostrification)。状态 **A1：两个具体英文页面实质正文可读**。
+- 用途：核对境外教育背景、职业层级、认定主体和补充措施，寻找对应负责机构。内容切口：“课程记录、资格认定与岗位录用，分别解决什么问题？”
+- 边界：其他国家的教育和执业经历也可能影响程序，不能只按国籍分流。页面提到的认定期间工作安排有条件，不可简写为申请后即可工作；语言和职业注册另查。
+
+### NC02 / Hochschule Campus Wien：资格认定说明
+
+- [Recognition of Qualifications](https://www.hcw.ac.at/en/studies/general-information-on-the-selection-process/recognition-of-qualifications)。状态 **A1：英文问答实质正文可读**，包括程序、材料及语言安排。
+- 用途：学习把“启动程序、评估、补修入学与完成要求”拆开解释。内容切口：“为什么不同环节的语言要求不能只用一个等级概括？”
+- 边界：这是该校相应项目的规则，不是全国所有学校条件。本次正文有暂行安排及结束学期，发布前核对仍否有效；不复制为学校合作、招生承诺或团队培训能力。
+
+### NC03 / 奥地利迁移门户：紧缺职业申请规则
+
+- [Skilled Workers in Shortage Occupations](https://www.migration.gv.at/en/types-of-immigration/permanent-immigration/skilled-workers-in-shortage-occupations/)。状态 **A1：英文实质正文可读**。
+- 用途：分别核对职业训练、工作邀约、积分与其他要求。内容切口：“职业名单、自己的资格与岗位，是三个不同的问题。”
+- 边界：名单中有职业不等于任何学生或毕业生都能直接受雇。受监管职业的资格要求另行核对；不把红白红卡、长期居留和国籍混为一谈。
+
+### NC04 / WORK in AUSTRIA：全国紧缺职业清单
+
+- [Nationwide shortage occupations](https://www.workinaustria.com/en/residence-employment/shortage-occupations/nationwide)。状态 **A1：职业分类及说明正文可读**。
+- 用途：查对应职业正式称谓及进一步入口，后续拓展其他职业时从这里确认线索。内容切口：“中文岗位称谓怎样对应到正式职业名称？”
+- 边界：核对适用年份、全国/区域清单及职业层级；不凭标题推断护理所有层级都适用。与 REF03 属同一机构，不视为第二份独立证明。清单不证明本品牌掌握岗位或保证录用。
+
+### NC05 / 奥地利护理协会 ÖGKV：认定与主管机构
+
+- [Nostrifikation und Anerkennung](https://oegkv.at/pflegeberuf/nostrifikation-und-anerkennung/)。状态 **A1：德文实质正文可读**。
+- 用途：从专业协会视角核对认定程序和主管主体，寻找原始负责机构。内容切口：“想问资格问题，先找对谁负责。”
+- 边界：协会说明不是对个人的认定决定，链接到的文件也需另读。与下面 MED02 同属 ÖGKV，不能当作相互独立来源。
+
+## 护理人才相关媒体与专业文章
+
+以下用于认识问题、观察叙事及寻找进一步核验线索。媒体报道的第三方案例仍是第三方案例，不移植为团队业绩，不从报道推导所有人的结果；不直接使用其照片和视频。
+
+### MED01 / ORF：国际护理人员的工作与适应
+
+- [上奥地利报道](https://ooe.orf.at/stories/3369532/)（2026-09-02）、[福拉尔贝格报道](https://vorarlberg.orf.at/stories/3250399/)（2024-03-25）。状态 **A1：两篇德文报道实质正文可读**；音视频未观看。合并为同一媒体来源组。
+- 实际取得：报道涉及国际护理人员、语言适应、职业衔接和落地支持。可借鉴从具体问题展开的方式，独立写“除语言考试外，工作沟通还要练什么？”“了解支持服务，应问清哪些事项？”
+- 边界：地区、年份和样本不同，不混加人数或写成全国统计；不同来源国项目不能直接套给中国学生。报道人物不是我们的客户，也不能用个体正向体验保证所有岗位待遇。
+
+### MED02 / ÖGKV：国际招聘的责任与支持
+
+- [文章入口](https://oegkv.at/aktuelles/pflegekraefte-aus-den-philippinen-eine-lange-geschichte-zwischen-bedarf-und-verantwortung/)（2025-06-26）、[同页公开两页 PDF 正文](https://oegkv.at/site/assets/files/12194/artikel_ethische_rekrutierung.pdf)。状态 **A1：网页说明与 PDF 文本可读**；未采集会员材料。
+- 用途：了解国际招聘中的支持、透明度与责任问题，转成准备者能问的问题。内容切口：“选择任何支持服务前，怎样问清费用、责任和后续安排？”
+- 边界：文章关注特定来源国与背景，不拿它当中国申请人的规则。PDF 中图片未授权使用，不整篇翻译，不照搬为强推荐或负面恐吓。
+
+## 两类专题的使用分工
+
+| 需要解决的问题 | 优先读取 | 使用方式 |
+|---|---|---|
+| 配额相关许可性质与限制 | QF01、QF02 | 回到对应许可小节，不抄旧金额 |
+| 当年领区与预约节点 | QF03 | 按年份、领区和时区核验，不做稀缺营销 |
+| 护理教育与资格认定 | NC01、NC02、NC05 | 区分读者起点、职业与负责主体 |
+| 紧缺职业与工作衔接 | NC03、NC04 | 分开查名单、背景、岗位和申请条件 |
+| 职业沟通、适应与支持 | MED01、MED02、REF04 | 取问题和叙事机制，不转成自有案例 |
+
+这些来源补足专业知识，不覆盖美好生活与文化主线。本轮未将正文不足、政策未经核对或以强销售为主的个人账号纳入活跃库；不因为名字包含“奥地利”或“护理”就收录。以后找到实际可读且匹配边界的自媒体，可按同一标准补充。
 
 ## 已观察片段怎样转成自己的内容
 
