@@ -5,3 +5,7 @@ private/
 .env
 .env.*
 !.env.example
+
+# Local creative history is never part of the public skill.
+content-history/
+.content-history/

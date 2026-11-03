@@ -3,7 +3,9 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const os=require('node:os');
 const path=require('node:path');
-const {validatePost,renderPost}=require('../scripts/render-post.cjs');
+const {validatePost,renderPost:renderWithHistory}=require('../scripts/render-post.cjs');
+// Rendering fixtures are not real editorial output and must never pollute a user's ledger.
+const renderPost=options=>renderWithHistory({...options,history:false});
 
 function post(){return {title:'预算整理方法',publish:{title:'家庭预算怎么列？',body:'先整理，再核对。',topics:['家庭规划']},pages:[
  {id:'cover',layout:'cover',style:'S1',title:'一家人的预算\n先从哪里开始？',subtitle:'先整理生活假设，再核对费用。',items:[{heading:'出发前',text:'一次性支出'}]},
@@ -158,4 +160,22 @@ test('editorial posts export all actual media and portable sources across three 
   if(name==='nursing')await renderPost({input:path.join(out,'source/post.json'),out:path.join(dir,'portable-nursing')});
  }
  console.log('Editorial validation directory:',dir);
+});
+
+test('renderer checks history before export, records successful output and links revisions',
+ {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-history-render-'));
+ const historyDir=path.join(dir,'history'),input=path.join(dir,'input.json'),a=post();a.pages=a.pages.slice(0,1);
+ fs.writeFileSync(input,JSON.stringify(a));
+ const first=await renderWithHistory({input,out:path.join(dir,'first'),historyDir});assert.ok(first.history.recordId);
+ await assert.rejects(renderWithHistory({input,out:path.join(dir,'duplicate'),historyDir}),/Duplicate/);
+ assert.ok(!fs.existsSync(path.join(dir,'duplicate')));
+ a.pages[0].subtitle='改进后的说明';fs.writeFileSync(input,JSON.stringify(a));
+ const revision=await renderWithHistory({input,out:path.join(dir,'revision'),base:first.out,pages:['cover'],historyDir});
+ assert.equal(revision.history.workId,first.history.workId);
+ const {listHistory}=require('../scripts/content-history.cjs');assert.equal(listHistory(historyDir).length,2);
+ const bad=structuredClone(a);bad.pages[0].title='过长标题'.repeat(2000);fs.writeFileSync(input,JSON.stringify(bad));
+ await assert.rejects(renderWithHistory({input,out:path.join(dir,'failed'),historyDir,revisionOf:first.history.recordId}),/overflow/i);
+ assert.equal(listHistory(historyDir).length,2);
+ console.log('History renderer evidence directory:',dir);
 });

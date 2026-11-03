@@ -2,6 +2,7 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
+const history=require('./content-history.cjs');
 const STYLES=['S1','S2','S3','S4','S5'];
 const LAYOUTS=['cover','checklist','steps','table','split','poster','feature','cards','worksheet','journey'];
 const EDITORIAL_LAYOUTS=['poster','feature','cards','worksheet','journey'];
@@ -156,6 +157,11 @@ async function renderPost(options){
   selected=new Set(options.pages);for(const id of selected)need(specs.some(p=>p.id===id),'Unknown selected page ID');
   for(const spec of specs)if(!selected.has(spec.id))need(previous.pages.find(p=>p.id===spec.id).fingerprint===spec.fingerprint,'Unselected page content or image changed; expand revision scope');
  }
+ const historyDirectory=options.history===false?null:history.historyRoot(options.historyDir);
+ const historyCandidate=historyDirectory?history.candidate(post,path.dirname(input)):null;
+ const revisionOf=options.revisionOf||previous?.history?.recordId;
+ const historyOptions={revisionOf,reason:options.historyReason,outputPath:out};
+ if(historyDirectory)history.assertAllowed(history.checkHistory(historyDirectory,historyCandidate,historyOptions),options.historyReason);
  const html='<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>'+esc(post.title)+'</title><style>'+CSS+STYLE_CSS+EDITORIAL_CSS+'</style><body>'+post.pages.map((p,i)=>pageHtml(post,p,i,assets.get(p.id))).join('')+'</body></html>';
  const {chromium}=loadPlaywright();
  const launch={headless:true};if(options.browser||process.env.BROWSER_EXECUTABLE)launch.executablePath=options.browser||process.env.BROWSER_EXECUTABLE;
@@ -206,11 +212,20 @@ async function renderPost(options){
   fs.writeFileSync(path.join(out,'publish-check.json'),JSON.stringify(publishStats(post.publish),null,2)+'\n');
  }
  fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({schemaVersion:1,globalFingerprint,pages:specs,renderedPages:[...selected],baseVersion:base?path.basename(base):null,automatedChecks:checks,visualReview:'required; not performed by this script'},null,2)+'\n');
- return {out,pages:specs.length,rendered:[...selected]};
+ let receipt;
+ if(historyDirectory){
+  try{receipt=history.recordHistory(historyDirectory,historyCandidate,historyOptions);}
+  catch(error){throw new Error('Files exported to '+out+' but local history registration failed: '+error.message);}
+  const manifestPath=path.join(out,'manifest.json'),manifest=readJson(manifestPath);
+  manifest.history={recordId:receipt.id,workId:receipt.workId,day:receipt.day};
+  fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
+  fs.writeFileSync(path.join(out,'history-check.json'),JSON.stringify(receipt.check,null,2)+'\n');
+ }
+ return {out,pages:specs.length,rendered:[...selected],history:receipt?{recordId:receipt.id,workId:receipt.workId,day:receipt.day}:null};
 }
 function cli(argv){
- const o={};const flags={'--input':'input','--out':'out','--base':'base','--pages':'pages','--browser':'browser'};
- for(let i=0;i<argv.length;i++){const k=flags[argv[i]];need(k&&argv[i+1]&&!argv[i+1].startsWith('--'),'Usage: node scripts/render-post.cjs --input post.json --out new-version [--browser executable] [--base previous-version --pages page-id,...]');need(o[k]===undefined,'Duplicate option');o[k]=argv[++i];}
+ const o={};const flags={'--input':'input','--out':'out','--base':'base','--pages':'pages','--browser':'browser','--history-dir':'historyDir','--revision-of':'revisionOf','--history-reason':'historyReason'};
+ for(let i=0;i<argv.length;i++){const k=flags[argv[i]];need(k&&argv[i+1]&&!argv[i+1].startsWith('--'),'Usage: node scripts/render-post.cjs --input post.json --out new-version [--browser executable] [--base previous-version --pages page-id,...] [--history-dir absolute-path] [--revision-of record-id] [--history-reason explanation]');need(o[k]===undefined,'Duplicate option');o[k]=argv[++i];}
  if(o.pages)o.pages=o.pages.split(',').map(s=>s.trim()).filter(Boolean);return o;
 }
 module.exports={validatePost,renderPost};

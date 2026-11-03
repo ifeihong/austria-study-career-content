@@ -44,6 +44,7 @@
 | 专业内容审核 | 区分护理教育、认定、注册、录用及许可；核对家庭规划涉及的对象、日期和条件 | 主张与出处核对、公开稿改写 |
 | 视频与跨平台改编 | 为无露脸视频、数字人讲解编写时间、旁白、画面、字幕和素材要求 | 可制作脚本；成片与可编辑工程另需实际制作工具 |
 | 自然互动与反馈 | 设计贴合本篇的评论问题和回复草稿，从真实评论与后台资料提取后续选题 | 互动草稿、观察、改动假设和下一版建议 |
+| 每日本地历史与查重 | 逐日记录实际生成内容，查相同正文、页面文字、高度重合及相同源图；结合人工判断语义增量 | 仓库外本地台账、相近作品报告，记录不上传 GitHub |
 | 局部修改与版本保护 | 只改指定页、保留已确认内容、另存版本并核对未改页 | 新版本及改动记录；渲染工具支持指定页更新 |
 
 适合自有实拍、采访与案例素材有限的团队。原创可以来自问题、解释、练习、叙事和设计；不需要假装亲历，也不编造成功案例。创作本身不授权发布、回复评论、发私信或收集客户资料。
@@ -124,6 +125,20 @@ Skill 提供方法、资源和本地图文工具；联网查证、AI 出图、�
 
 知识解释尽量包含清楚的对象、结论、适用条件和来源，方便读者理解，也让可被访问的内容更便于检索与引用。平台内搜索、公开网页 SEO 和生成式回答的引用分别判断；未观察的数据只作候选，不编热搜、搜索量或竞争度，不承诺排名、收录、AI 引用或咨询增长。方法见 [编辑生产方法](references/editorial-production.md)。
 
+## 本地记录每天创作，减少重复选题
+
+本地历史功能记录完成时间（上海时区）、标题、正文、页面内容、配图摘要及输出位置。制作前先查历史，成稿后检查重复和高度相似内容，成功导出后自动登记。只换标题、标点或 emoji 不能避开相同正文；同题新解释可以继续，由 Agent 对照历史确认增量。
+
+```sh
+node scripts/content-history.cjs list
+node scripts/content-history.cjs list --date 2026-11-03
+node scripts/content-history.cjs check --input assets/editorial/culture.json
+```
+
+默认存储于用户主目录的 `.austria-study-career-content/history/`，可通过环境变量 `AUSTRIA_CONTENT_HISTORY_DIR` 或忽略上传的 `history.local.json` 指定共享目录。代码会上传 GitHub，实际记录和本机配置不上传。换电脑需迁移本地台账；首次空库不能代表已查全部历史作品。
+
+内置图文渲染器自动查重并登记，其他工具完成的文案、选题或视频脚本由 Agent 调用 `record` 登记。修改版沿用作品编号、保留旧记录；用户明确要求重复时记录原因。词面相似算法不能识别所有同义改写，不保证全网或全账号零重复。详见 [本地历史使用与边界](references/content-history.md)。
+
 ## 从创作到交付如何把关
 
 确认范围与工具素材 → 查来源和主张 → 初审事实与公开用词 → 成稿及逐页任务 → 配图规划与设计 → 实际制作 → 内容、视觉分别验收 → 交付与版本记录。
@@ -197,7 +212,7 @@ npm test
 | 小红书设计与配图 | [完整制作指南](references/xiaohongshu-production.md)、[发布字段规范](references/xiaohongshu-publish-fields.md)、[风格库](references/xiaohongshu-styles.md)、[视觉验收](references/visual-production.md)、[正式样稿与素材](assets/editorial/README.md) |
 | 图片导出、修改与检查 | [制作工具](references/production-tools.md)、[渲染脚本](scripts/render-post.cjs)、[回归测试](tests/renderer.test.cjs)、[版本与私有资料](references/revision-and-private-data.md) |
 | 视频与数字人 | [视频交付规范及脚本示例](references/video-production.md) |
-| 评论、数据与后续咨询 | [素材与反馈](references/materials-and-feedback.md)、[咨询衔接](references/consultation-and-positioning.md) |
+| 评论、数据与后续咨询 | [本地历史](references/content-history.md)、[素材与反馈](references/materials-and-feedback.md)、[咨询衔接](references/consultation-and-positioning.md) |
 
 ## 使用范围与维护
 
