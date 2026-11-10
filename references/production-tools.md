@@ -44,7 +44,7 @@ node scripts/render-post.cjs --input assets/editorial/family.json --out output/f
 | 页面排版 | `layout` 的基础值为 cover、checklist、steps、table、split；editorial 模式另支持 poster、feature、cards、worksheet、journey；可选页级 style、eyebrow、subtitle、note |
 | 内容条目 | `items` 数组，每项有 heading 和可选 text |
 | 表格 | table/worksheet 布局需 columns 与 rows，每行单元格数等于列数，单元格为文字 |
-| 图片 | `image` 为相对 JSON 文件的本地 PNG/JPEG/WebP 路径；`imageLabel` 为成图标识或说明 |
+| 图片 | `image` 为相对 JSON 文件的本地 PNG/JPEG/WebP 路径；`imageLabel` 为可选的可见图注，不填 AI 来源提示，见[素材记录与手动声明](xiaohongshu-publish-fields.md#素材记录与手动声明) |
 | 图片适配 | 可选 `imageFit` 为 contain（完整呈现）或 cover（填充裁切）；`imageHeight` 为 160—800 的整数像素；`imageFocus` 为 x/y 两个 0—100 的百分比坐标 |
 
 `imageLabel` 和适配字段必须同时有 `image`，否则报错，避免说明静默丢失。需要保留证据全貌时先选 contain；cover 用于允许裁切的情境图，焦点控制不替代成图检查。增加图片高度后仍可能溢出，应调整版面或拆页，不隐藏内容。
