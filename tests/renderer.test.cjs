@@ -101,6 +101,16 @@ test('curated templates export portable complete sets; stale images or source ar
    fs.appendFileSync(media,'changed');assert.throws(()=>auditPackage(out),/Source media hash mismatch/);fs.writeFileSync(media,asset);
   }
   assert.ok(m.automatedChecks.every(check=>check.brandFooter.visible&&check.brandFooter.text==='奥地利求学就业桔'));
+  const excessive=structuredClone(saved);excessive.pages=excessive.pages.slice(0,1);excessive.pages[0].items=[{heading:'受保护的长内容',text:'内容需要重新分配版面，不能截断。'.repeat(250)}];
+  const crowded=path.join(out,'source/crowded.json');fs.writeFileSync(crowded,JSON.stringify(excessive));
+  await assert.rejects(renderPost({input:crowded,out:path.join(dir,template+'-crowded')}),/overflow|clipping/i);
+  if(['t7','t8'].includes(template)){
+   const variantOut=path.join(dir,template+'-illustrated');
+   await renderPost({input:path.join(__dirname,'../assets/templates/'+template+'-illustrated.json'),out:variantOut});
+   assert.equal(auditPackage(variantOut).pages,4);
+   const variantManifest=JSON.parse(fs.readFileSync(path.join(variantOut,'manifest.json'),'utf8'));
+   for(let i=1;i<m.pages.length;i++)assert.deepEqual(fs.readFileSync(path.join(out,m.pages[i].file)),fs.readFileSync(path.join(variantOut,variantManifest.pages[i].file)),'Image cover variant must preserve its interior pages');
+  }
   if(template==='t3'){
    await renderPost({input:path.join(out,'source/post.json'),out:path.join(dir,'portable')});
    // Keep relative media paths valid by writing alongside the copied sources.

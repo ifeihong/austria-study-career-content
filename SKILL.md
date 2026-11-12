@@ -24,6 +24,8 @@ description: 为“奥地利求学就业桔”创作和审核奥地利美好生�
 
 ## 按任务加载专项能力
 
+- 未指定信息方向、模板或配图时，读[自动选择与配图判断](references/design-selection.md)。Agent先识别主任务、密度、素材与证据，可调用scripts/select-design.cjs获取候选及理由，再写实际排版输入。明确选择优先；近期模板仅作轻度调整，不为了轮换牺牲阅读与证据。T7/T8允许纯文字或带图封面，按本篇任务判断，不永久禁图。
+
 - 使用既有设计、原稿完整照排或润色时，读 [八套设计模板](references/selected-templates.md) 与 [原稿完整性](references/manuscript-fidelity.md)。S1—S8决定信息组织；T1—T3保留用户认可的三套基准，T4—T8提供摄影杂志、艺术画册、轻漫画、问答专题与资料手册。正式图文优先从 [精选模板资源](assets/templates/README.md) 或适合主题的V10样稿开始，不把模板样例的页数、事实和服务承诺当作新稿默认内容。
 
 - 素材有限、参考国内外公开内容、制作系列或搜索型内容时，读 [编辑生产方法](references/editorial-production.md)，按主题选用 [国内外来源库](references/source-library.md)。默认不依赖原创实拍、采访或客户案例，不将别人的经历写成本品牌案例。只借鉴实际读到的内容，另核对事实与素材权限。

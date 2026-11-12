@@ -117,5 +117,11 @@ const css=`
 .template-T8.worksheet td{padding:24px 22px;border-bottom:1px solid #aeb5a4;background:transparent}
 .template-T8.cover .body{justify-content:center}.template-T8.cover .item{padding:32px;background:#f0f2e9;border:1px solid #abb49d}
 .template-T8.cover .item h2{font-size:39px}.template-T8.cover .item p{font-size:34px}
+.template-T7.poster .items,.template-T8.poster .items{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.template-T7.poster .items{grid-template-columns:repeat(2,minmax(0,1fr))}.template-T7.poster .item:first-child{grid-column:1/-1}
+.template-T7.poster .item,.template-T8.poster .item{padding:18px 0 0;border:0;border-top:2px solid var(--accent);background:transparent}
+.template-T7.poster .item h2,.template-T8.poster .item h2{font-size:30px;line-height:1.6}
+.template-T7.poster .item p,.template-T8.poster .item p{font-size:29px;line-height:1.8;margin-top:12px}
+.template-T7.poster .media img,.template-T8.poster .media img{height:440px;border-radius:12px}
 `;
 module.exports={presets,css};

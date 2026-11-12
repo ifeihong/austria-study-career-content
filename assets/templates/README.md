@@ -17,6 +17,12 @@
 
 共43页样稿，均附实际匹配的发布标题、含适量emoji正文与话题；页数仅演示，后续按内容安排。T4使用三张独立咖啡馆生成照片感场景，T5有两张独立水彩画面，T6有两张关联但不同的漫画场景。T7/T8主要以文字与原生图解承载信息。每页页尾均保留账号昵称。
 
+## T7/T8带图封面变体
+
+原版没有场景配图是有意的资料阅读策略，不是漏做。现在另附[t7-illustrated.json](t7-illustrated.json)（[4页预览](../../docs/images/template-t7-illustrated.jpg)）与[t8-illustrated.json](t8-illustrated.json)（[4页预览](../../docs/images/template-t8-illustrated.jpg)），提供匹配的插画/照片封面，内页保持原版内容。两者是原模板的变体，不是新增两种风格。
+
+可运行`node scripts/select-design.cjs --input assets/templates/selection-example.json`获得方向、模板及是否使用带图变体的建议。按[内容与配图判断](../../references/design-selection.md)使用，不强制每页有图。
+
 ```sh
 node scripts/render-post.cjs --input assets/templates/t7.json --out output/t7-v01
 node scripts/audit-package.cjs output/t7-v01

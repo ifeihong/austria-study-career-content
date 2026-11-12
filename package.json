@@ -8,7 +8,7 @@
   },
   "scripts": {
     "render": "node scripts/render-post.cjs",
-    "test": "node --test tests/renderer.test.cjs tests/content-history.test.cjs"
+    "test": "node --test tests/renderer.test.cjs tests/content-history.test.cjs tests/design-selection.test.cjs"
   },
   "dependencies": {
     "playwright": "1.62.1"

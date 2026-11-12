@@ -31,4 +31,10 @@ Generate a NEW independent landscape 3:2 editorial comic illustration, using ref
 
 ## 检查与后续复用
 
+### 审查补充：T7/T8带图变体
+
+qa-study.png复用editorial/media/nursing-study.png中的通用学习插画，只用于T7问答封面。handbook-desk.png为本轮内置image_gen新生成的通用资料整理照片，用于T8资料手册封面，不是官方材料或文件证据。
+
+handbook-desk.png提示词：One landscape 3:2 premium realistic editorial still-life photograph for a Chinese educational preparation handbook cover. A clean pale oak desk near a softly lit window, neatly organized unlettered ivory paper folders, three short stacks of completely blank paper, a plain open notebook, graphite pencil, brass paper clips and a small muted sage ceramic cup. Quiet sophisticated ivory, warm light gray, sage and natural wood palette, natural overcast daylight, balanced diagonal composition with visual breathing room. Camera looking down obliquely at the organized desk, authentic paper fibers and wood texture, refined magazine photography. No people, no logos, no text, no letters, no numbers, no documents with official-looking seals or forms, no computer screen, no watermark, no AI label. Generic organizational scene only.
+
 T5两张图以空间→物件变化；T6以桌面讨论→走廊阅读变化。每套内主图不同，色调、光线和媒介保持关联。生成画面仍需检查近似、手部与物件关系、文字残留和主题匹配，不因为文件不同就视为有实质变化。

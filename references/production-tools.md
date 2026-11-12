@@ -16,6 +16,8 @@
 
 ## 完整导出
 
+未指定视觉方案时，可先运行`node scripts/select-design.cjs --input assets/templates/selection-example.json`。选择器根据结构化简报与只读本地模板历史提供方向、模板、备选、素材缺口及布局建议；它不自动改post JSON、不生成图片。字段和状态见[自动选择](design-selection.md)。
+
 在仓库根目录运行：
 
 ```sh
