@@ -3,9 +3,10 @@ const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
 const history=require('./content-history.cjs');
+const templates=require('./visual-templates.cjs');
 const STYLES=['S1','S2','S3','S4','S5'];
-const LAYOUTS=['cover','checklist','steps','table','split','poster','feature','cards','worksheet','journey'];
-const EDITORIAL_LAYOUTS=['poster','feature','cards','worksheet','journey'];
+const EDITORIAL_LAYOUTS=['poster','feature','cards','worksheet','journey','bands','metric-panels','service-grid','step-grid','feature-aside'];
+const LAYOUTS=['cover','checklist','steps','table','split',...EDITORIAL_LAYOUTS];
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
 function need(ok,message){if(!ok)throw new Error(message);}
@@ -34,32 +35,40 @@ function validatePublish(publish){
 }
 function validatePost(input){
  need(input&&typeof input==='object'&&!Array.isArray(input),'Post must be an object');
- keys(input,['title','brand','style','theme','design','pages','publish'],'post');
+ keys(input,['title','brand','style','theme','design','template','pages','publish'],'post');
  const post=structuredClone(input);text(post.title,'title',true);
  post.brand??='奥地利求学就业桔';text(post.brand,'brand',true);
  post.style??='S1';need(STYLES.includes(post.style),'Unknown global style');
  post.design??='basic';need(['basic','editorial'].includes(post.design),'Unknown design mode');
+ if(post.template!==undefined){need(Object.hasOwn(templates.presets,post.template),'Unknown template');need(post.design==='editorial','Template requires editorial design');}
  post.theme??={};need(post.theme&&typeof post.theme==='object'&&!Array.isArray(post.theme),'theme must be an object');
  for(const [k,v] of Object.entries(post.theme))need(['background','ink','accent'].includes(k)&&typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v),'Invalid theme color');
+ if(post.template)post.theme={...templates.presets[post.template].theme,...post.theme};
  need(Array.isArray(post.pages)&&post.pages.length>0,'pages must be a nonempty array');
  const ids=new Set();
  for(const p of post.pages){
   need(p&&typeof p==='object'&&!Array.isArray(p),'Each page must be an object');
-  keys(p,['id','title','layout','style','subtitle','eyebrow','note','imageLabel','image','imageFit','imageHeight','imageFocus','items','columns','rows'],'page');
+  keys(p,['id','title','layout','style','subtitle','eyebrow','note','imageLabel','image','imageFit','imageHeight','imageFocus','imageRole','imageReuseReason','items','columns','rows'],'page');
   need(typeof p.id==='string'&&/^[a-z0-9][a-z0-9-]{0,48}$/.test(p.id),'Invalid page ID');
   need(!ids.has(p.id),'Duplicate page ID');ids.add(p.id);
   text(p.title,'page title',true);p.layout??='checklist';need(LAYOUTS.includes(p.layout),'Unknown page layout');
   if(EDITORIAL_LAYOUTS.includes(p.layout))need(post.design==='editorial','Editorial layout requires editorial design');
-  if(['poster','feature'].includes(p.layout))need(p.image!==undefined,'Image-led layout requires image');
+  if(['bands','metric-panels','service-grid','step-grid','feature-aside'].includes(p.layout))need(post.template,'Curated layout requires a template');
+  if(['poster','feature','feature-aside'].includes(p.layout))need(p.image!==undefined,'Image-led layout requires image');
   if(p.style!==undefined)need(STYLES.includes(p.style),'Unknown page style');
   for(const k of ['subtitle','eyebrow','note','imageLabel'])if(p[k]!==undefined)text(p[k],k);
   if(p.image!==undefined){text(p.image,'image',true);need(!/^[a-z]+:/i.test(p.image)&&!path.isAbsolute(p.image)&&!p.image.split(/[\\/]/).includes('..'),'image must be a local relative path without parent traversal');}
-  for(const field of ['imageLabel','imageFit','imageHeight','imageFocus'])if(p[field]!==undefined)need(p.image!==undefined,field+' requires image');
+  for(const field of ['imageLabel','imageFit','imageHeight','imageFocus','imageRole','imageReuseReason'])if(p[field]!==undefined)need(p.image!==undefined,field+' requires image');
+  if(p.imageRole!==undefined)need(['scene','evidence'].includes(p.imageRole),'Unknown imageRole');
+  if(p.imageReuseReason!==undefined){text(p.imageReuseReason,'imageReuseReason',true);need(p.imageRole==='evidence'&&p.imageReuseReason.trim().length>=8,'Image reuse requires evidence role and a specific reason');}
   if(p.imageFit!==undefined)need(['contain','cover'].includes(p.imageFit),'Invalid imageFit');
   if(p.imageHeight!==undefined)need(Number.isInteger(p.imageHeight)&&p.imageHeight>=160&&p.imageHeight<=800,'imageHeight must be 160 to 800 pixels');
   if(p.imageFocus!==undefined){need(p.imageFocus&&typeof p.imageFocus==='object'&&!Array.isArray(p.imageFocus),'imageFocus must be an object');keys(p.imageFocus,['x','y'],'imageFocus');for(const axis of ['x','y'])need(Number.isFinite(p.imageFocus[axis])&&p.imageFocus[axis]>=0&&p.imageFocus[axis]<=100,'imageFocus coordinates must be 0 to 100');}
   p.items??=[];need(Array.isArray(p.items),'items must be an array');
-  for(const item of p.items){need(item&&typeof item==='object'&&!Array.isArray(item),'item must be an object');keys(item,['heading','text'],'item');text(item.heading,'item heading',true);if(item.text!==undefined)text(item.text,'item text');}
+  for(const item of p.items){need(item&&typeof item==='object'&&!Array.isArray(item),'item must be an object');keys(item,['heading','text','value','unit'],'item');text(item.heading,'item heading',true);if(item.text!==undefined)text(item.text,'item text');
+   for(const field of ['value','unit'])if(item[field]!==undefined){text(item[field],field,true);need(p.layout==='metric-panels',field+' requires metric-panels');}
+   if(item.unit!==undefined)need(item.value!==undefined,'unit requires value');
+  }
   if(!['table','worksheet'].includes(p.layout))need(p.columns===undefined&&p.rows===undefined,'columns and rows require table or worksheet layout');
   if(['table','worksheet'].includes(p.layout)){
    need(Array.isArray(p.columns)&&p.columns.length>0,'table columns required');p.columns.forEach(v=>text(v,'column',true));
@@ -127,12 +136,26 @@ const EDITORIAL_CSS=`
 .editorial.checklist .items,.editorial.steps .items{flex:1}
 `;
 function pageHtml(post,p,index,asset){
+ const label=(key,value)=>`data-text-key="${esc(p.id+'.'+key)}"`;
  const style=p.style||post.style;const theme=Object.entries(post.theme).map(([k,v])=>'--'+({background:'bg',ink:'ink',accent:'accent'}[k])+':'+v).join(';');
  const framing=[p.imageHeight!==undefined?'height:'+p.imageHeight+'px':'',p.imageFit?'object-fit:'+p.imageFit:'',p.imageFocus?'object-position:'+p.imageFocus.x+'% '+p.imageFocus.y+'%':''].filter(Boolean).join(';');
- const media=asset?`<figure class="media"><img alt="${esc(p.imageLabel||'主题素材')}" style="${framing}" src="${asset.data}">${p.imageLabel?'<figcaption>'+esc(p.imageLabel)+'</figcaption>':''}</figure>`:'';
- const items=p.items.map((item,i)=>`<div class="item">${['steps','journey'].includes(p.layout)?'<span class="number">'+String(i+1).padStart(2,'0')+'</span>':''}<h2>${esc(item.heading)}</h2>${item.text?'<p>'+esc(item.text)+'</p>':''}</div>`).join('');
- const table=['table','worksheet'].includes(p.layout)?`<table><thead><tr>${p.columns.map(c=>'<th>'+esc(c)+'</th>').join('')}</tr></thead><tbody>${p.rows.map(row=>'<tr>'+row.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')}</tbody></table>`:'';
- return `<article class="page style-${style} ${post.design==='editorial'?'editorial':''} ${p.layout} ${asset?'has-image':''}" id="page-${p.id}" style="${theme}"><header><div class="eyebrow">${esc(p.eyebrow||post.brand)}</div><h1 class="${p.layout==='cover'?'cover-title':''}">${esc(p.title)}</h1>${p.subtitle?'<p class="subtitle">'+esc(p.subtitle)+'</p>':''}</header><section class="body" data-check-overflow>${media}${table}${p.items.length?'<div class="items">'+items+'</div>':''}${p.note?'<div class="note">'+esc(p.note)+'</div>':''}</section><footer class="foot"><span>${esc(post.brand)}</span><span>${String(index+1).padStart(2,'0')} / ${String(post.pages.length).padStart(2,'0')}</span></footer></article>`;
+ const media=asset?`<figure class="media"><img alt="${esc(p.imageLabel||'主题素材')}" style="${framing}" src="${asset.data}">${p.imageLabel?'<figcaption '+label('imageLabel')+'>'+esc(p.imageLabel)+'</figcaption>':''}</figure>`:'';
+ const items=p.items.map((item,i)=>`<div class="item">${['steps','journey','step-grid'].includes(p.layout)?'<span class="number">'+String(i+1).padStart(2,'0')+'</span>':''}<h2 ${label('items.'+i+'.heading')}>${esc(item.heading)}</h2>${item.value!==undefined?'<div class="metric"><span '+label('items.'+i+'.value')+'>'+esc(item.value)+'</span>'+ (item.unit?'<small '+label('items.'+i+'.unit')+'>'+esc(item.unit)+'</small>':'')+'</div>':''}${item.text?'<p '+label('items.'+i+'.text')+'>'+esc(item.text)+'</p>':''}</div>`).join('');
+ const table=['table','worksheet'].includes(p.layout)?`<table><thead><tr>${p.columns.map((c,i)=>'<th '+label('columns.'+i)+'>'+esc(c)+'</th>').join('')}</tr></thead><tbody>${p.rows.map((row,i)=>'<tr>'+row.map((c,j)=>'<td '+label('rows.'+i+'.'+j)+'>'+esc(c)+'</td>').join('')+'</tr>').join('')}</tbody></table>`:'';
+ const templateClass=post.template?((post.template==='T1'&&!['bands','metric-panels','service-grid','step-grid','feature-aside'].includes(p.layout)?'':'curated ')+'template-'+post.template):'';
+ return `<article class="page style-${style} ${post.design==='editorial'?'editorial':''} ${templateClass} ${p.layout} ${asset?'has-image':''}" id="page-${p.id}" style="${theme}"><header><div class="eyebrow" ${label('eyebrow')}>${esc(p.eyebrow||post.brand)}</div><h1 ${label('title')} class="${p.layout==='cover'?'cover-title':''}">${esc(p.title)}</h1>${p.subtitle?'<p class="subtitle" '+label('subtitle')+'>'+esc(p.subtitle)+'</p>':''}</header><section class="body" data-check-overflow>${media}${table}${p.items.length?'<div class="items">'+items+'</div>':''}${p.note?'<div class="note" '+label('note')+'>'+esc(p.note)+'</div>':''}</section><footer class="foot"><span ${label('brand')}>${esc(post.brand)}</span><span>${String(index+1).padStart(2,'0')} / ${String(post.pages.length).padStart(2,'0')}</span></footer></article>`;
+}
+function expectedText(post){
+ const entries={};
+ for(const p of post.pages){
+  const put=(key,value)=>{entries[p.id+'.'+key]=value;};
+  put('eyebrow',p.eyebrow||post.brand);put('title',p.title);put('brand',post.brand);
+  for(const key of ['subtitle','note','imageLabel'])if(p[key])put(key,p[key]);
+  p.items.forEach((item,i)=>{for(const key of ['heading','text','value','unit'])if(item[key])put('items.'+i+'.'+key,item[key]);});
+  if(p.columns)p.columns.forEach((v,i)=>put('columns.'+i,v));
+  if(p.rows)p.rows.forEach((row,i)=>row.forEach((v,j)=>put('rows.'+i+'.'+j,v)));
+ }
+ return entries;
 }
 function loadPlaywright(){
  try{return require(process.env.PLAYWRIGHT_MODULE_PATH||'playwright');}
@@ -144,8 +167,12 @@ async function renderPost(options){
  need(!fs.existsSync(out),'Output directory already exists; choose a new version.');
  const post=validatePost(readJson(input));
  const assets=new Map(post.pages.filter(p=>p.image).map(p=>[p.id,readImage(path.dirname(input),p.image)]));
+ const imageGroups=new Map();
+ for(const p of post.pages.filter(p=>p.image)){const hash=sha(assets.get(p.id).bytes);if(!imageGroups.has(hash))imageGroups.set(hash,[]);imageGroups.get(hash).push(p);}
+ for(const group of imageGroups.values())if(group.length>1)need(group.every(p=>p.imageRole==='evidence'&&p.imageReuseReason),'Repeated scene image content on pages '+group.map(p=>p.id).join(', ')+'. Use distinct scenes; evidence reuse needs explicit role and reason on every occurrence.');
  const rootConfig={...post};delete rootConfig.pages;delete rootConfig.publish;
- const globalFingerprint=sha(JSON.stringify({config:rootConfig,renderer:sha(fs.readFileSync(__filename))}));
+ const rendererFingerprint=sha(fs.readFileSync(__filename))+':'+sha(fs.readFileSync(require.resolve('./visual-templates.cjs')));
+ const globalFingerprint=sha(JSON.stringify({config:rootConfig,renderer:rendererFingerprint}));
  const specs=post.pages.map((p,i)=>{const clean={...p};delete clean.image;return {id:p.id,file:'images/'+String(i+1).padStart(2,'0')+'-'+p.id+'.png',fingerprint:sha(JSON.stringify({globalFingerprint,page:clean,image:assets.has(p.id)?sha(assets.get(p.id).bytes):null}))};});
  let previous,base,selected=new Set(post.pages.map(p=>p.id));
  if(options.base||options.pages){
@@ -162,21 +189,40 @@ async function renderPost(options){
  const revisionOf=options.revisionOf||previous?.history?.recordId;
  const historyOptions={revisionOf,reason:options.historyReason,outputPath:out};
  if(historyDirectory)history.assertAllowed(history.checkHistory(historyDirectory,historyCandidate,historyOptions),options.historyReason);
- const html='<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>'+esc(post.title)+'</title><style>'+CSS+STYLE_CSS+EDITORIAL_CSS+'</style><body>'+post.pages.map((p,i)=>pageHtml(post,p,i,assets.get(p.id))).join('')+'</body></html>';
+ const html='<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>'+esc(post.title)+'</title><style>'+CSS+STYLE_CSS+EDITORIAL_CSS+templates.css+'</style><body>'+post.pages.map((p,i)=>pageHtml(post,p,i,assets.get(p.id))).join('')+'</body></html>';
  const {chromium}=loadPlaywright();
  const launch={headless:true};if(options.browser||process.env.BROWSER_EXECUTABLE)launch.executablePath=options.browser||process.env.BROWSER_EXECUTABLE;
- const browser=await chromium.launch(launch);const buffers=new Map();const checks=[];let preview;
+ const browser=await chromium.launch(launch);const buffers=new Map();const checks=[];let preview,textAudit;
  try{
   const tab=await browser.newPage({viewport:{width:1080,height:1440},deviceScaleFactor:1});
   await tab.route('**/*',route=>route.abort());
   await tab.setContent(html);await tab.evaluate(()=>document.fonts.ready);
   need(await tab.locator('img').evaluateAll(images=>images.every(i=>i.complete&&i.naturalWidth>0)),'Image decode failure');
+  const actual=await tab.locator('[data-text-key]').evaluateAll(nodes=>Object.fromEntries(nodes.map(n=>[n.dataset.textKey,n.textContent])));
+  const expected=expectedText(post);
+  need(Object.keys(actual).length===Object.keys(expected).length&&Object.entries(expected).every(([key,value])=>actual[key]===value),'Rendered text differs from input');
+  textAudit={exactInputMatch:true,entryCount:Object.keys(expected).length,entries:actual,scope:'Input JSON to rendered DOM; does not compare to an earlier user manuscript or prove facts/visual quality.'};
   for(const spec of specs){
    // Keep the target on a single viewport; long scrolling documents can capture unpainted tiles.
    await tab.locator('.page').evaluateAll((pages,id)=>{for(const page of pages)page.style.display=page.id==='page-'+id?'flex':'none';},spec.id);
+   await tab.evaluate(async()=>{window.scrollTo(0,0);await new Promise(requestAnimationFrame);await new Promise(requestAnimationFrame);});
    const el=tab.locator('#page-'+spec.id);
    const check=await el.evaluate(e=>({width:e.clientWidth,height:e.clientHeight,overflow:e.scrollWidth>e.clientWidth+2||e.scrollHeight>e.clientHeight+2||[...e.querySelectorAll('[data-check-overflow]')].some(x=>x.scrollHeight>x.clientHeight+2||x.scrollWidth>x.clientWidth+2)}));
    need(!check.overflow,'Layout overflow on page '+spec.id+'; shorten or split content');
+   const clipped=await el.evaluate(article=>{
+    const footer=article.querySelector('.foot').getBoundingClientRect();
+    return [...article.querySelectorAll('[data-text-key]')].filter(node=>{
+     const box=node.getBoundingClientRect();
+     if(node.closest('.body')&&box.bottom>footer.top-6)return true;
+     for(let parent=node.parentElement;parent&&parent!==article.parentElement;parent=parent.parentElement){
+      const style=getComputedStyle(parent),rect=parent.getBoundingClientRect();
+      if(['hidden','clip'].includes(style.overflowX)&&(box.left<rect.left-2||box.right>rect.right+2))return true;
+      if(['hidden','clip'].includes(style.overflowY)&&(box.top<rect.top-2||box.bottom>rect.bottom+2))return true;
+     }
+     return node.scrollWidth>node.clientWidth+2;
+    }).map(node=>node.dataset.textKey);
+   });
+   need(!clipped.length,'Text clipping on page '+spec.id+': '+clipped.join(', '));
    checks.push({id:spec.id,...check});
    let bytes;
    if(selected.has(spec.id))bytes=await el.screenshot({type:'png'});
@@ -203,6 +249,7 @@ async function renderPost(options){
  const portable=structuredClone(post);
  if(assets.size){fs.mkdirSync(path.join(out,'source/media'));for(const p of portable.pages)if(assets.has(p.id)){const a=assets.get(p.id);p.image='media/'+p.id+a.extension;fs.writeFileSync(path.join(out,'source',p.image),a.bytes);}}
  fs.writeFileSync(path.join(out,'source/post.json'),JSON.stringify(portable,null,2)+'\n');
+ fs.writeFileSync(path.join(out,'source/text-audit.json'),JSON.stringify(textAudit,null,2)+'\n');
  if(post.publish){
   const topics=post.publish.topics.map(t=>'#'+t).join(' ');
   fs.writeFileSync(path.join(out,'publish.md'),'# 推荐标题\n\n'+post.publish.title+'\n\n# 正文\n\n'+post.publish.body+'\n\n# 话题\n\n'+topics+'\n');
@@ -211,7 +258,9 @@ async function renderPost(options){
   fs.writeFileSync(path.join(out,'publish-topics.txt'),topics);
   fs.writeFileSync(path.join(out,'publish-check.json'),JSON.stringify(publishStats(post.publish),null,2)+'\n');
  }
- fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({schemaVersion:1,globalFingerprint,pages:specs,renderedPages:[...selected],baseVersion:base?path.basename(base):null,automatedChecks:checks,visualReview:'required; not performed by this script'},null,2)+'\n');
+ const sourceFiles=['source/post.html','source/post.json','source/text-audit.json',...portable.pages.filter(p=>p.image).map(p=>'source/'+p.image)];
+ const sourceHashes=Object.fromEntries(sourceFiles.map(file=>[file,sha(fs.readFileSync(path.join(out,file)))]));
+ fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({schemaVersion:1,globalFingerprint,sourceHashes,pages:specs,renderedPages:[...selected],baseVersion:base?path.basename(base):null,automatedChecks:checks,visualReview:'required; not performed by this script'},null,2)+'\n');
  let receipt;
  if(historyDirectory){
   try{receipt=history.recordHistory(historyDirectory,historyCandidate,historyOptions);}

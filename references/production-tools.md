@@ -32,6 +32,22 @@ node scripts/render-post.cjs --input assets/editorial/family.json --out output/f
 
 ## 输入字段
 
+### 精选模板与新组件
+
+可从[三套模板输入](../assets/templates/README.md)开始。全局`template`支持T1、T2、T3，要求`design: "editorial"`。模板补齐background/ink/accent默认值，显式theme可覆盖；原有无template输入保持兼容。style仍为S1—S5的信息方向。
+
+新增布局`bands`（全宽分类条带）、`metric-panels`（数值与条件面板）、`service-grid`（同类任务分组）、`step-grid`（两列步骤）、`feature-aside`（侧图解释），都要求template；feature-aside必须提供image。前三类与步骤通过items填写；metric-panels另允许每项value与可选unit，仅渲染提供的文本，不推导金额或补助。可用换行分组，所有字符串仍被转义，不支持任意HTML。
+
+每套场景图片按文件内容SHA-256检查完全重复，换名无效；近似画面仍人工检查。必要的原始资料对照复用，须每处填写`imageRole: "evidence"`及至少8字符的`imageReuseReason`，说明实际证据任务；该字段不是场景图复用的绕过方式。imageRole/reason为内部记录，不作为图注输出。
+
+渲染器输出`source/text-audit.json`比较输入和实际DOM，检查文本容器裁切，并在manifest记录源HTML、JSON与文字记录摘要。修改视觉模板代码会使旧base不能局部重用，需完整重导。之后执行：
+
+```sh
+node scripts/audit-package.cjs output/t3-v01
+```
+
+包检查器无需浏览器，不查联网事实或美观度；旧manifest缺少源摘要时要求用当前渲染器重新导出，不伪造通过。原稿保留与润色的语义核对见[原稿完整性](manuscript-fidelity.md)。
+
 参考 [正式示例](../assets/editorial/family.json)。字段中的文本全部转义后排版，不接受 HTML 或 CSS 片段。
 
 输入使用 UTF-8 JSON，支持 Windows 编辑器可能附带的 UTF-8 BOM。字段名严格按下表填写，未知字段或在非 table 页面填写 columns/rows 会报错，避免拼写错误导致内容静默遗漏。内部来源记录、提示词与审核状态另存文件，不向排版 JSON 任意加字段。

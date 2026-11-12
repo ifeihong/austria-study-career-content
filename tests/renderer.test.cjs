@@ -4,6 +4,7 @@ const fs=require('node:fs');
 const os=require('node:os');
 const path=require('node:path');
 const {validatePost,renderPost:renderWithHistory}=require('../scripts/render-post.cjs');
+const {auditPackage}=require('../scripts/audit-package.cjs');
 // Rendering fixtures are not real editorial output and must never pollute a user's ledger.
 const renderPost=options=>renderWithHistory({...options,history:false});
 
@@ -58,6 +59,46 @@ test('publishing fields enforce conservative standard-note limits including emoj
  const d=post();d.publish.topics=['护理 学习'];assert.throws(()=>validatePost(d),/topic.*format/i);
  const e=post();e.publish.topics=Array.from({length:9},(_,i)=>'主题'+i);assert.throws(()=>validatePost(e),/8.*editorial/i);
  const f=post();f.publish.title='两行\n标题';assert.throws(()=>validatePost(f),/single line/i);
+});
+
+test('curated presets validate intentional template, metrics and evidence reuse fields',()=>{
+ const a=post();a.design='editorial';a.template='T3';a.pages[0].layout='metric-panels';a.pages[0].items=[{heading:'记录示例',value:'3',unit:'项',text:'记录条件'}];
+ assert.equal(validatePost(a).theme.background,'#fcf7f3');
+ const b=structuredClone(a);b.template='T9';assert.throws(()=>validatePost(b),/template/i);
+ const c=structuredClone(a);c.design='basic';assert.throws(()=>validatePost(c),/editorial/i);
+ const d=structuredClone(a);d.pages[0].layout='cards';assert.throws(()=>validatePost(d),/metric-panels/i);
+ const e=post();e.pages[0].image='media.png';e.pages[0].imageRole='scene';e.pages[0].imageReuseReason='对照原始资料的同一段';assert.throws(()=>validatePost(e),/evidence/i);
+});
+
+test('curated templates export portable complete sets; stale images or source are detected',
+ {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-curated-'));
+ for(const template of ['t1','t2','t3']){
+  const input=path.join(__dirname,'../assets/templates/'+template+'.json'),out=path.join(dir,template);
+  await renderPost({input,out});
+  assert.equal(auditPackage(out).pages,template==='t1'?9:7);
+  const m=JSON.parse(fs.readFileSync(path.join(out,'manifest.json'),'utf8'));
+  const image=path.join(out,m.pages[0].file),bytes=fs.readFileSync(image);
+  fs.appendFileSync(image,'changed');assert.throws(()=>auditPackage(out),/Image hash mismatch/);fs.writeFileSync(image,bytes);
+  const html=path.join(out,'source/post.html'),original=fs.readFileSync(html);
+  fs.appendFileSync(html,'stale edit');assert.throws(()=>auditPackage(out),/Source hash mismatch/);fs.writeFileSync(html,original);
+  assert.equal(auditPackage(out).hashesMatch,true);
+  const saved=JSON.parse(fs.readFileSync(path.join(out,'source/post.json'),'utf8'));
+  const media=path.join(out,'source',saved.pages.find(p=>p.image).image),asset=fs.readFileSync(media);
+  fs.appendFileSync(media,'changed');assert.throws(()=>auditPackage(out),/Source media hash mismatch/);fs.writeFileSync(media,asset);
+  if(template==='t3'){
+   await renderPost({input:path.join(out,'source/post.json'),out:path.join(dir,'portable')});
+   // Keep relative media paths valid by writing alongside the copied sources.
+   const duplicate=JSON.parse(fs.readFileSync(path.join(out,'source/post.json'),'utf8'));
+   duplicate.pages[3].image=duplicate.pages[0].image;
+   const file=path.join(out,'source/duplicate.json');fs.writeFileSync(file,JSON.stringify(duplicate));
+   await assert.rejects(renderPost({input:file,out:path.join(dir,'duplicate')}),/Repeated scene image/);
+   for(const p of [duplicate.pages[0],duplicate.pages[3]]){p.imageRole='evidence';p.imageReuseReason='测试资料对照复用，非新的场景';}
+   fs.writeFileSync(file,JSON.stringify(duplicate));
+   await renderPost({input:file,out:path.join(dir,'evidence')});
+  }
+ }
+ console.log('Curated template validation directory:',dir);
 });
 
 test('render full post, preserve unselected pages and reject unsafe partial revision',

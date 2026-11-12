@@ -8,7 +8,7 @@
 | [nursing.json](nursing.json) | 图片封面—四环节对照—资料工作表—下一项任务 | 新生成职业情境插画，人物不是客户或见证人 |
 | [family.json](family.json) | 图片封面—生活假设—预算工作表—家庭讨论 | 早期 DEMO 家庭封面 + 新生成家庭讨论图，不是真实家庭案例 |
 
-这些是能实际制作的设计示例，保留旧版成图与文案中的素材标注。新稿可借鉴版式和逐页结构，按[素材记录与手动声明](../../references/xiaohongshu-publish-fields.md#素材记录与手动声明)交付。护理与家庭样稿以方法说明为主，不含具体资格、薪资、当地报价或结果承诺。文化稿的出处链接在正文与 [来源说明](../../references/knowledge-lifestyle-culture.md) 中，图片不作文化史证据。
+这些是能实际制作的设计示例，已清理可复制文案及可见图注中的早期AI来源字样，素材说明保留在PROMPTS中。新稿可借鉴版式和逐页结构，按[素材记录与手动声明](../../references/xiaohongshu-publish-fields.md#素材记录与手动声明)交付。护理与家庭样稿以方法说明为主，不含具体资格、薪资、当地报价或结果承诺。文化稿的出处链接在正文与 [来源说明](../../references/knowledge-lifestyle-culture.md) 中，图片不作文化史证据。
 
 执行示例：
 
