@@ -1,26 +1,31 @@
-# 三套精选图文模板
+# 八套小红书设计模板
 
-这三套模板严格提炼自用户最后确认的成品：T1温暖陪伴叙事、T2雾蓝完整编辑、T3暖白酒红精排。三套来源分别为护理陪伴版、7页完整重设计与护理精排版。
+八套模板各有构图与阅读节奏；S1—S8是独立的信息方向。T1—T3来自用户认可的三个成品，T4—T8扩充摄影、艺术、情境、问答与资料表达。
 
-![三个模板的实际封面比较](../../docs/images/templates-covers.jpg)
+![八套模板实际封面](../../docs/images/templates-eight.jpg)
 
-| 输入 | 特征 | 完整预览 |
-|---|---|---|
-| [t1.json](t1.json) | 护理陪伴版：暖米白深绿、温暖照片、叙事推进、图文解释 | [9页](../../docs/images/template-t1.jpg) |
-| [t2.json](t2.json) | 7页完整重设计：雾蓝体系、分区人物封面、结构化说明 | [7页](../../docs/images/template-t2.jpg) |
-| [t3.json](t3.json) | 连续段落、宽栏阅读、上下指标、精排步骤 | [7页](../../docs/images/template-t3.jpg) |
+| ID | 名称 | 特点 | 输入与完整预览 |
+|---|---|---|---|
+| T1 | 温暖陪伴叙事 | 暖米白深绿、场景照片、图文解释与叙事推进 | [输入](t1.json) · [9页](../../docs/images/template-t1.jpg) |
+| T2 | 雾蓝完整编辑 | 人物文字分区、雾蓝体系、条带比较与步骤卡 | [输入](t2.json) · [7页](../../docs/images/template-t2.jpg) |
+| T3 | 暖白酒红精排 | 连续段落、舒适行长、宽栏组件与横向面板 | [输入](t3.json) · [7页](../../docs/images/template-t3.jpg) |
+| T4 | 生活摄影杂志 | 大幅照片、方形画框、宋体标题、照片与说明交替 | [输入](t4.json) · [4页](../../docs/images/template-t4.jpg) |
+| T5 | 文化艺术画册 | 水彩画面、纸感配色、细框、书卷式章节 | [输入](t5.json) · [4页](../../docs/images/template-t5.jpg) |
+| T6 | 轻漫画情境 | 细腻线稿、情境分镜、交替对话框、温暖配色 | [输入](t6.json) · [4页](../../docs/images/template-t6.jpg) |
+| T7 | 问答专题编辑 | 问题主导封面、清楚答案、分层解释与条件 | [输入](t7.json) · [4页](../../docs/images/template-t7.jpg) |
+| T8 | 实用资料手册 | 清晰表格、字段示例、规则线与注释 | [输入](t8.json) · [4页](../../docs/images/template-t8.jpg) |
 
-三个输入均使用护理准备方法型文案：T1保留原陪伴版9页的叙事结构，T2/T3各7页、使用相同示例内容展示布局差异，共23页。它们是可复用的设计起点，不逐像素复刻原项目，也不包含原项目未核实的金额、补助门槛或服务承诺。后续页数由内容决定。
+共43页样稿，均附实际匹配的发布标题、含适量emoji正文与话题；页数仅演示，后续按内容安排。T4使用三张独立咖啡馆生成照片感场景，T5有两张独立水彩画面，T6有两张关联但不同的漫画场景。T7/T8主要以文字与原生图解承载信息。每页页尾均保留账号昵称。
 
 ```sh
-node scripts/render-post.cjs --input assets/templates/t3.json --out output/t3-v01
-node scripts/audit-package.cjs output/t3-v01
+node scripts/render-post.cjs --input assets/templates/t7.json --out output/t7-v01
+node scripts/audit-package.cjs output/t7-v01
 ```
 
-修改title、pages、publish及本地配图后再用。运行环境和历史机制见[制作工具](../../references/production-tools.md)。详细选择与精排规则见[模板指南](../../references/selected-templates.md)。
+图片、输入与必要素材支持迁移；依赖、字体与浏览器另备。新主题替换内容、素材和发布字段后重新出图，不把示例当成通用事实。流程见[制作工具](../../references/production-tools.md)，选用见[模板指南](../../references/selected-templates.md)。
 
-## 素材来源与用途
+## 素材性质
 
-`media/companion-cover.png`、`companion-class.png`、`companion-room.png`来自护理陪伴版的三个生成场景；`blue-study.png`与`blue-room.png`来自7页完整重设计；`warm-study.png`与`warm-room.png`来自护理精排版。来自本次用户授权整理的既有设计素材，不是实际学生、学校、医院或真实房源证明。每套内部主图互不重复。
+T1—T3沿用已认可设计的生成场景；T4沿用原文化样稿的三个关联场景；T5/T6补充四张独立生成的艺术及漫画画面，提示词与来源见[PROMPTS.md](PROMPTS.md)。它们不是真实客户、学校、医院、房源或合作证明，也不是文化史证据。
 
-成品与发布文案不自动添加AI来源字样；由团队发布时手动使用平台声明功能。素材说明留在本文件与内部制作记录；既有工具/平台强制标识不移除。公开素材也不意味着真实机构、人物或合作背书，不新增第三方素材授权承诺。
+成品不自动添加AI来源字样；素材对应与声明提醒保存在内部说明，由团队实际发布时手动使用平台声明功能。工具/平台要求保留的已有标识不移除。公开展示也不自动授予第三方素材、品牌与人物的通用再分发权。

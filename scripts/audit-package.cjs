@@ -21,6 +21,7 @@ function auditPackage(directory){
  for(const file of expectedSources)need(sha(read(file))===manifest.sourceHashes[file],'Source hash mismatch: '+file);
  const post=validatePost(JSON.parse(read('source/post.json')));
  need(post.pages.length===manifest.pages.length,'Page count mismatch');
+ need(Array.isArray(manifest.automatedChecks)&&manifest.automatedChecks.length===post.pages.length&&manifest.automatedChecks.every((check,i)=>check.id===post.pages[i].id&&check.brandFooter?.visible===true&&check.brandFooter.text===post.brand),'Brand footer checks missing or inconsistent; re-export with current renderer');
  const ids=new Set();
  for(const [i,page] of manifest.pages.entries()){
   need(page.id===post.pages[i].id&&!ids.has(page.id),'Page order or duplicate ID mismatch');ids.add(page.id);

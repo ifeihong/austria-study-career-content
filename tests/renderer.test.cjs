@@ -68,15 +68,27 @@ test('curated presets validate intentional template, metrics and evidence reuse 
  const c=structuredClone(a);c.design='basic';assert.throws(()=>validatePost(c),/editorial/i);
  const d=structuredClone(a);d.pages[0].layout='cards';assert.throws(()=>validatePost(d),/metric-panels/i);
  const e=post();e.pages[0].image='media.png';e.pages[0].imageRole='scene';e.pages[0].imageReuseReason='对照原始资料的同一段';assert.throws(()=>validatePost(e),/evidence/i);
+ for(let i=1;i<=8;i++){const sample=post();sample.design='editorial';sample.style='S'+i;sample.template='T'+i;assert.equal(validatePost(sample).style,'S'+i);}
+ const f=post();f.style='S9';assert.throws(()=>validatePost(f),/style/i);
+ const g=post();g.design='editorial';g.pages[0].layout='qa';assert.throws(()=>validatePost(g),/template/i);
+ const h=post();h.brand='奥地利求学就业橘';assert.throws(()=>validatePost(h),/Brand/);
+});
+
+test('eight catalogs route to valid complete inputs and compatible presets',()=>{
+ const {presets}=require('../scripts/visual-templates.cjs');
+ const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/templates/catalog.json'),'utf8'));
+ const directions=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/information-directions.json'),'utf8'));
+ assert.equal(catalog.length,8);assert.equal(new Set(directions.map(d=>d.id)).size,8);
+ for(const t of catalog){const source=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/templates',t.input),'utf8'));const valid=validatePost(source);assert.equal(valid.template,t.id);assert.equal(presets[t.id].name,t.name);assert.equal(valid.pages.length,t.samplePages);assert.ok(directions.some(d=>d.id===valid.style));}
 });
 
 test('curated templates export portable complete sets; stale images or source are detected',
  {skip:process.env.RUN_RENDER_TESTS!=='1'},async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'austria-curated-'));
- for(const template of ['t1','t2','t3']){
+ for(const template of ['t1','t2','t3','t4','t5','t6','t7','t8']){
   const input=path.join(__dirname,'../assets/templates/'+template+'.json'),out=path.join(dir,template);
   await renderPost({input,out});
-  assert.equal(auditPackage(out).pages,template==='t1'?9:7);
+  assert.equal(auditPackage(out).pages,template==='t1'?9:['t2','t3'].includes(template)?7:4);
   const m=JSON.parse(fs.readFileSync(path.join(out,'manifest.json'),'utf8'));
   const image=path.join(out,m.pages[0].file),bytes=fs.readFileSync(image);
   fs.appendFileSync(image,'changed');assert.throws(()=>auditPackage(out),/Image hash mismatch/);fs.writeFileSync(image,bytes);
@@ -84,8 +96,11 @@ test('curated templates export portable complete sets; stale images or source ar
   fs.appendFileSync(html,'stale edit');assert.throws(()=>auditPackage(out),/Source hash mismatch/);fs.writeFileSync(html,original);
   assert.equal(auditPackage(out).hashesMatch,true);
   const saved=JSON.parse(fs.readFileSync(path.join(out,'source/post.json'),'utf8'));
-  const media=path.join(out,'source',saved.pages.find(p=>p.image).image),asset=fs.readFileSync(media);
-  fs.appendFileSync(media,'changed');assert.throws(()=>auditPackage(out),/Source media hash mismatch/);fs.writeFileSync(media,asset);
+  if(saved.pages.some(p=>p.image)){
+   const media=path.join(out,'source',saved.pages.find(p=>p.image).image),asset=fs.readFileSync(media);
+   fs.appendFileSync(media,'changed');assert.throws(()=>auditPackage(out),/Source media hash mismatch/);fs.writeFileSync(media,asset);
+  }
+  assert.ok(m.automatedChecks.every(check=>check.brandFooter.visible&&check.brandFooter.text==='奥地利求学就业桔'));
   if(template==='t3'){
    await renderPost({input:path.join(out,'source/post.json'),out:path.join(dir,'portable')});
    // Keep relative media paths valid by writing alongside the copied sources.

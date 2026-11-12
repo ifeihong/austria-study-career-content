@@ -2,7 +2,7 @@
 
 ## 能做什么
 
-`scripts/render-post.cjs` 从本地 JSON 生成独立 PNG、360 像素宽整套预览、发布文案、可编辑 HTML/JSON 与修改记录。支持五种风格方向、basic 兼容模式与 editorial 制作模式。正式设计资源见 [V10 样稿](../assets/editorial/README.md)，可选本地图片。
+`scripts/render-post.cjs` 从本地 JSON 生成独立 PNG、360 像素宽整套预览、发布文案、可编辑 HTML/JSON 与修改记录。支持S1—S8八个信息方向与T1—T8八套模板、basic 兼容模式与 editorial 制作模式。正式设计资源见 [V10 样稿](../assets/editorial/README.md)，可选本地图片。
 
 这是一套稳定起点，不是对五张风格 DEMO 的逐像素复刻。复杂的实景叠字、自由构图和艺术设计仍可使用其他排版工具，最终检查标准相同。脚本不负责 AI 图片生成，也不会联网下载素材。
 
@@ -34,9 +34,9 @@ node scripts/render-post.cjs --input assets/editorial/family.json --out output/f
 
 ### 精选模板与新组件
 
-可从[三套模板输入](../assets/templates/README.md)开始。全局`template`支持T1、T2、T3，要求`design: "editorial"`。模板补齐background/ink/accent默认值，显式theme可覆盖；原有无template输入保持兼容。style仍为S1—S5的信息方向。
+可从[八套模板输入](../assets/templates/README.md)开始。全局`template`支持T1—T8，要求`design: "editorial"`。模板补齐background/ink/accent默认值，显式theme可覆盖；原有无template输入保持兼容。style为S1—S8的信息方向。
 
-新增布局`bands`（全宽分类条带）、`metric-panels`（数值与条件面板）、`service-grid`（同类任务分组）、`step-grid`（两列步骤）、`feature-aside`（侧图解释），都要求template；feature-aside必须提供image。前三类与步骤通过items填写；metric-panels另允许每项value与可选unit，仅渲染提供的文本，不推导金额或补助。可用换行分组，所有字符串仍被转义，不支持任意HTML。
+新增布局`bands`（全宽分类条带）、`metric-panels`（数值与条件面板）、`service-grid`（同类任务分组）、`step-grid`（两列步骤）、`feature-aside`（侧图解释），以及`qa`（问题解答）、`dialogue`（情境对话），均要求template；feature-aside必须提供image。前三类与步骤通过items填写；metric-panels另允许每项value与可选unit，仅渲染提供的文本，不推导金额或补助。可用换行分组，所有字符串仍被转义，不支持任意HTML。
 
 每套场景图片按文件内容SHA-256检查完全重复，换名无效；近似画面仍人工检查。必要的原始资料对照复用，须每处填写`imageRole: "evidence"`及至少8字符的`imageReuseReason`，说明实际证据任务；该字段不是场景图复用的绕过方式。imageRole/reason为内部记录，不作为图注输出。
 
@@ -54,7 +54,7 @@ node scripts/audit-package.cjs output/t3-v01
 
 | 层级 | 字段与含义 |
 |---|---|
-| 全局 | `design` 为 basic 或 editorial，省略时保留 basic 兼容行为；正式图文显式采用 editorial 或自定义设计；`title` 文档名称；`brand` 品牌署名，默认既定品牌；`style` 为 S1—S5；可选 `theme` 的 background、ink、accent 为六位十六进制颜色 |
+| 全局 | `design` 为 basic 或 editorial，省略时保留 basic 兼容行为；正式图文显式采用 editorial 或自定义设计；`title` 文档名称；`brand` 固定为奥地利求学就业桔；`style` 为 S1—S8；可选 `template` 为 T1—T8，要求editorial；可选 `theme` 的 background、ink、accent 为六位十六进制颜色 |
 | 发布文案 | 可选 `publish`，含 title、body、topics 数组；存在时输出 publish.md、标题/正文/话题 TXT 与内部 publish-check.json；按 [普通图文字段规范](xiaohongshu-publish-fields.md) 校验保守 20/1000 单元预算及本地最多 8 个话题，否则只是图片制作任务，不是完整发布包 |
 | 页面 | `pages` 数组；每页必须有唯一的英文小写字母、数字及连字符 `id`，以及非空 `title` |
 | 页面排版 | `layout` 的基础值为 cover、checklist、steps、table、split；editorial 模式另支持 poster、feature、cards、worksheet、journey；可选页级 style、eyebrow、subtitle、note |
@@ -84,6 +84,9 @@ node scripts/render-post.cjs --input assets/editorial/family.json --out output/f
 修改发布正文不影响图片时可沿用相同机制；渲染脚本、全篇公共设置或页序发生变化需完整导出新版本。`manifest.json` 保存实际渲染页与每张图片摘要，不自动证明内容已获业务确认。
 
 ## 导出与检查
+
+每页页尾包含“奥地利求学就业桔”，品牌字段拒绝误写。导出逐页核对实际品牌文字、页尾位置与字号，并在automatedChecks的brandFooter中记录结果。包检查器要求每页有完整且一致的署名检查；外部工具或自定义版式也需执行页尾规范。
+
 
 输出：images/、preview.jpg、source/post.html、source/post.json、必要的 source/media/、manifest.json，以及可选的 publish.md。HTML 内嵌图片，可直接浏览；JSON 与复制的媒体支持再次渲染。
 

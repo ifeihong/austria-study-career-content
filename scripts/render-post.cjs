@@ -4,8 +4,8 @@ const path=require('node:path');
 const crypto=require('node:crypto');
 const history=require('./content-history.cjs');
 const templates=require('./visual-templates.cjs');
-const STYLES=['S1','S2','S3','S4','S5'];
-const EDITORIAL_LAYOUTS=['poster','feature','cards','worksheet','journey','bands','metric-panels','service-grid','step-grid','feature-aside'];
+const STYLES=['S1','S2','S3','S4','S5','S6','S7','S8'];
+const EDITORIAL_LAYOUTS=['poster','feature','cards','worksheet','journey','bands','metric-panels','service-grid','step-grid','feature-aside','qa','dialogue'];
 const LAYOUTS=['cover','checklist','steps','table','split',...EDITORIAL_LAYOUTS];
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
@@ -37,7 +37,7 @@ function validatePost(input){
  need(input&&typeof input==='object'&&!Array.isArray(input),'Post must be an object');
  keys(input,['title','brand','style','theme','design','template','pages','publish'],'post');
  const post=structuredClone(input);text(post.title,'title',true);
- post.brand??='奥地利求学就业桔';text(post.brand,'brand',true);
+ post.brand??='奥地利求学就业桔';text(post.brand,'brand',true);need(post.brand==='奥地利求学就业桔','Brand must be 奥地利求学就业桔; preserve the 桔 character');
  post.style??='S1';need(STYLES.includes(post.style),'Unknown global style');
  post.design??='basic';need(['basic','editorial'].includes(post.design),'Unknown design mode');
  if(post.template!==undefined){need(Object.hasOwn(templates.presets,post.template),'Unknown template');need(post.design==='editorial','Template requires editorial design');}
@@ -53,7 +53,7 @@ function validatePost(input){
   need(!ids.has(p.id),'Duplicate page ID');ids.add(p.id);
   text(p.title,'page title',true);p.layout??='checklist';need(LAYOUTS.includes(p.layout),'Unknown page layout');
   if(EDITORIAL_LAYOUTS.includes(p.layout))need(post.design==='editorial','Editorial layout requires editorial design');
-  if(['bands','metric-panels','service-grid','step-grid','feature-aside'].includes(p.layout))need(post.template,'Curated layout requires a template');
+  if(['bands','metric-panels','service-grid','step-grid','feature-aside','qa','dialogue'].includes(p.layout))need(post.template,'Curated layout requires a template');
   if(['poster','feature','feature-aside'].includes(p.layout))need(p.image!==undefined,'Image-led layout requires image');
   if(p.style!==undefined)need(STYLES.includes(p.style),'Unknown page style');
   for(const k of ['subtitle','eyebrow','note','imageLabel'])if(p[k]!==undefined)text(p[k],k);
@@ -142,7 +142,7 @@ function pageHtml(post,p,index,asset){
  const media=asset?`<figure class="media"><img alt="${esc(p.imageLabel||'主题素材')}" style="${framing}" src="${asset.data}">${p.imageLabel?'<figcaption '+label('imageLabel')+'>'+esc(p.imageLabel)+'</figcaption>':''}</figure>`:'';
  const items=p.items.map((item,i)=>`<div class="item">${['steps','journey','step-grid'].includes(p.layout)?'<span class="number">'+String(i+1).padStart(2,'0')+'</span>':''}<h2 ${label('items.'+i+'.heading')}>${esc(item.heading)}</h2>${item.value!==undefined?'<div class="metric"><span '+label('items.'+i+'.value')+'>'+esc(item.value)+'</span>'+ (item.unit?'<small '+label('items.'+i+'.unit')+'>'+esc(item.unit)+'</small>':'')+'</div>':''}${item.text?'<p '+label('items.'+i+'.text')+'>'+esc(item.text)+'</p>':''}</div>`).join('');
  const table=['table','worksheet'].includes(p.layout)?`<table><thead><tr>${p.columns.map((c,i)=>'<th '+label('columns.'+i)+'>'+esc(c)+'</th>').join('')}</tr></thead><tbody>${p.rows.map((row,i)=>'<tr>'+row.map((c,j)=>'<td '+label('rows.'+i+'.'+j)+'>'+esc(c)+'</td>').join('')+'</tr>').join('')}</tbody></table>`:'';
- const templateClass=post.template?((post.template==='T1'&&!['bands','metric-panels','service-grid','step-grid','feature-aside'].includes(p.layout)?'':'curated ')+'template-'+post.template):'';
+ const templateClass=post.template?((post.template==='T1'&&!['bands','metric-panels','service-grid','step-grid','feature-aside','qa','dialogue'].includes(p.layout)?'':'curated ')+'template-'+post.template):'';
  return `<article class="page style-${style} ${post.design==='editorial'?'editorial':''} ${templateClass} ${p.layout} ${asset?'has-image':''}" id="page-${p.id}" style="${theme}"><header><div class="eyebrow" ${label('eyebrow')}>${esc(p.eyebrow||post.brand)}</div><h1 ${label('title')} class="${p.layout==='cover'?'cover-title':''}">${esc(p.title)}</h1>${p.subtitle?'<p class="subtitle" '+label('subtitle')+'>'+esc(p.subtitle)+'</p>':''}</header><section class="body" data-check-overflow>${media}${table}${p.items.length?'<div class="items">'+items+'</div>':''}${p.note?'<div class="note" '+label('note')+'>'+esc(p.note)+'</div>':''}</section><footer class="foot"><span ${label('brand')}>${esc(post.brand)}</span><span>${String(index+1).padStart(2,'0')} / ${String(post.pages.length).padStart(2,'0')}</span></footer></article>`;
 }
 function expectedText(post){
@@ -223,6 +223,13 @@ async function renderPost(options){
     }).map(node=>node.dataset.textKey);
    });
    need(!clipped.length,'Text clipping on page '+spec.id+': '+clipped.join(', '));
+   const brandFooter=await el.evaluate(article=>{
+    const node=article.querySelector('.foot [data-text-key]'),footer=node.closest('footer');
+    const box=node.getBoundingClientRect(),area=article.getBoundingClientRect(),foot=footer.getBoundingClientRect(),style=getComputedStyle(node);
+    return {text:node.textContent,visible:box.width>0&&box.height>0&&box.left>=area.left+20&&box.right<=area.right-20&&box.top>=foot.top&&box.bottom<=area.bottom-15&&foot.top>area.top+1200&&style.visibility!=='hidden'&&Number(style.opacity)>0&&parseFloat(style.fontSize)>=22};
+   });
+   need(brandFooter.text===post.brand&&brandFooter.visible,'Brand footer missing, clipped or too small on page '+spec.id);
+   check.brandFooter=brandFooter;
    checks.push({id:spec.id,...check});
    let bytes;
    if(selected.has(spec.id))bytes=await el.screenshot({type:'png'});
