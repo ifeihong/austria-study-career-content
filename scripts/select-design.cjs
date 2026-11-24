@@ -8,6 +8,7 @@ const media=['photo','illustration','comic','evidence'];
 const layouts={S1:['cover','cards','worksheet','checklist'],S2:['poster','dialogue','feature','cards'],S3:['poster','feature','cards','feature'],S4:['cover','feature','worksheet','qa'],S5:['cover','bands','worksheet','step-grid'],S6:['cover','qa','qa','qa'],S7:['poster','feature','journey','cards'],S8:['poster','feature','bands','qa']};
 function need(ok,message){if(!ok)throw new Error(message);}
 function selectDesign(input){
+ require('./check-env.cjs').assertNodeVersion();
  need(input&&typeof input==='object'&&!Array.isArray(input),'Brief must be an object');
  const allowed=['purpose','direction','template','density','visualIntent','availableMedia','canGenerate','recentTemplates','evidenceRequired','imageContext'];
  for(const key of Object.keys(input))need(allowed.includes(key),'Unknown brief field: '+key);

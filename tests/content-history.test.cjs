@@ -44,3 +44,35 @@ test('public skill paths are refused and an active write lock is preserved',()=>
  assert.ok(fs.existsSync(path.join(root,'.lock')));
  assert.equal(listHistory(root).length,0);
 });
+
+test('custom pages include actual text, numeric conditions and complete coverage instead of silently dropping fields',()=>{
+ const c=candidate({title:'冬日生活',body:'了解一个季节',template:'T4',pages:[
+  {id:'cover',text:'一个实际页面的完整文字'},
+  {id:'guide',body:'饮品单价与押金分开核对',note:'退杯规则看现场',items:[{heading:'每月',value:'600',unit:'欧元',text:'仅在符合条件时'}]}
+ ]});
+ assert.match(c.normalized.pages,/完整文字/);assert.match(c.normalized.pages,/600欧元/);
+ assert.match(c.normalized.pages,/退杯规则/);assert.equal(c.coverage.pageCount,2);assert.equal(c.coverage.textPageCount,2);
+ assert.throws(()=>candidate({title:'不能静默丢字',body:'正文',pages:[{id:'one',copy:'这里有重要条件'}]}),/Unknown page field.*copy/);
+});
+
+test('custom record keeps output location and page-only duplicates are blocked',()=>{
+ const root=temp(),dir=temp(),text='圣诞集市先选择喜欢的场景再核对营业时间，饮品单价和杯具押金需要分开确认，不同摊位的退杯规则不默认一致。';
+ const first=candidate({title:'冬日一',body:'短正文一',outputPath:dir,pages:[{text}]});
+ const record=recordHistory(root,first);assert.equal(record.outputPath,dir);
+ assert.equal(checkHistory(root,candidate({title:'换个标题',body:'短正文二',pages:[{text}]})).decision,'block');
+ assert.throws(()=>recordHistory(root,candidate({title:'位置',body:'内容',outputPath:'relative/folder'})),/absolute/);
+});
+
+test('record CLI accepts an explicit absolute output path and retains source hashes',()=>{
+ const {spawnSync}=require('node:child_process'),dir=temp(),ledger=path.join(dir,'ledger'),out=path.join(dir,'delivery');
+ fs.mkdirSync(out);fs.writeFileSync(path.join(dir,'art.png'),'unique scene');
+ const input=path.join(dir,'post.json');fs.writeFileSync(input,JSON.stringify({title:'图文记录',body:'正文内容',pages:[{id:'one',text:'一页完整内容',image:'art.png'}]}));
+ const r=spawnSync(process.execPath,[path.resolve(__dirname,'../scripts/content-history.cjs'),'record','--input',input,'--dir',ledger,'--out',out],{encoding:'utf8'});
+ assert.equal(r.status,0,r.stderr);const saved=JSON.parse(r.stdout);
+ assert.equal(saved.outputPath,out);assert.equal(saved.content.images.length,1);assert.equal(saved.content.coverage.textPageCount,1);
+});
+
+test('coverage identifies each empty page even when other pages have text',()=>{
+ const c=candidate({title:'混合内容',template:'T4',pages:[{id:'one',text:'这一页有内容'},{id:'two',text:''}]});
+ assert.equal(c.coverage.textPageCount,1);assert.ok(c.coverage.warnings.some(x=>x.includes('two')));
+});

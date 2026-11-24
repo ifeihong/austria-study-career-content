@@ -52,6 +52,26 @@ node scripts/content-history.cjs record --input output/completed-script.json
 
 不自动扫描磁盘、聊天或账号。历史导入仅处理用户授权的具体文件；明确标为补录，登记日期不冒充原生成日期，已知日期另保存在导入说明中。
 
+## 自定义图文的完整记录
+
+一个实际页面对应一个 `pages` 对象。可使用 `title/subtitle/text/body/caption/note/imageLabel`、`items` 的 `heading/text/value/unit`、`columns/rows`，每页主图写相对于输入JSON的 `image`。未知页面或条目字段会拒绝，先明确映射，不静默丢掉自定义文案。纯图片页可保留，但需检查 `coverage` 中的页数、提取文字页数、素材页数和警告是否符合本篇。
+
+```json
+{"title":"冬日生活小抄","style":"S3","template":"T4","templateVariant":"winter-editorial","medium":"photo","primaryGoal":"save","body":"本篇实际正文","pages":[{"id":"cover","text":"封面完整文字","image":"assets/01.png"},{"id":"guide","text":"第二页完整说明","image":"assets/02.png"}]}
+```
+
+`template` 记录实际采用的T编号，独立版式可记 `custom`；`templateVariant` 说明变体。选择器只识别T1—T8，不猜测custom，不能为轮换假记编号。标准渲染器仍只接受其现有schema，不直接接收上述自定义字段。
+
+自定义包先按[自定义交付](custom-production.md)完成审计，再运行：
+
+```sh
+node scripts/content-history.cjs record --input <包目录>/source/custom-post.json --out <包目录绝对路径>
+```
+
+`--out`仅用于record，要求绝对路径；也可从输入顶层 `outputPath` 读取。页面全文、图片哈希和位置必须与实际成品相符，登记成功不等于已经发布。视频或纯正文可继续只提供标题和正文/脚本，不强制填不存在的页面。
+
+旧记录不会自动改写。发现旧版缺少页内文字或素材时，保留原记录，以已核实的完整输入通过 `--revision-of 旧记录ID` 新增修订，并在输入中写明补全说明及实际原始日期；不得伪造生成时间、已发布状态或绕过其他作品的重复检查。Node CLI启动前可运行 `node scripts/check-env.cjs --mode core`，需要Node.js 20+。
+
 ## 算法与人工判断
 
 - 文本以 NFKC、大小写和去装饰符号标准化，标题变化、标点与 emoji 变化不会遮住相同正文。

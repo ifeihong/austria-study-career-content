@@ -9,3 +9,9 @@ private/
 # Local creative history is never part of the public skill.
 content-history/
 .content-history/
+
+# Private publishing feedback and interpreter caches.
+publishing-feedback/
+.publishing-feedback/
+__pycache__/
+*.pyc

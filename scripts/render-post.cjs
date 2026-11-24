@@ -3,6 +3,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
 const history=require('./content-history.cjs');
+const {assertNodeVersion}=require('./check-env.cjs');
 const templates=require('./visual-templates.cjs');
 const STYLES=['S1','S2','S3','S4','S5','S6','S7','S8'];
 const EDITORIAL_LAYOUTS=['poster','feature','cards','worksheet','journey','bands','metric-panels','service-grid','step-grid','feature-aside','qa','dialogue'];
@@ -34,6 +35,7 @@ function validatePublish(publish){
  return publish;
 }
 function validatePost(input){
+ assertNodeVersion();
  need(input&&typeof input==='object'&&!Array.isArray(input),'Post must be an object');
  keys(input,['title','brand','style','theme','design','template','pages','publish'],'post');
  const post=structuredClone(input);text(post.title,'title',true);
@@ -284,5 +286,5 @@ function cli(argv){
  for(let i=0;i<argv.length;i++){const k=flags[argv[i]];need(k&&argv[i+1]&&!argv[i+1].startsWith('--'),'Usage: node scripts/render-post.cjs --input post.json --out new-version [--browser executable] [--base previous-version --pages page-id,...] [--history-dir absolute-path] [--revision-of record-id] [--history-reason explanation]');need(o[k]===undefined,'Duplicate option');o[k]=argv[++i];}
  if(o.pages)o.pages=o.pages.split(',').map(s=>s.trim()).filter(Boolean);return o;
 }
-module.exports={validatePost,renderPost};
+module.exports={validatePost,validatePublish,publishStats,renderPost};
 if(require.main===module)renderPost(cli(process.argv.slice(2))).then(r=>console.log('Exported '+r.pages+' pages; rendered: '+r.rendered.join(', ')+'. Visual review still required.')).catch(e=>{console.error(e.message);process.exitCode=1;});

@@ -2,11 +2,13 @@
 
 **把奥地利生活讲得有画面，把学习、工作和家庭准备讲具体。**
 
-为「奥地利求学就业桔」提供可复用的中文内容生产流程：资料研究、选题、文案、配图、图文设计、审核与本地版本管理。重点制作小红书完整图文，也支持无露脸视频脚本、数字人讲解脚本和跨平台改编。
+为「奥地利求学就业桔」提供可复用的中文内容生产流程：资料研究、选题、文案、配图、图文设计、审核、本地版本与发布反馈。重点制作小红书完整图文，也支持无露脸视频脚本、数字人讲解脚本和跨平台改编。
 
 定位为**奥地利学习、就业与家庭生活规划咨询**。用具体、有用、好看的知识与生活内容吸引理解和交流，读者主动咨询后如实衔接服务；不强制每篇带销售结尾。
 
-[八套模板](#templates) · [八个信息方向](#directions) · [核心能力](#features) · [快速使用](#start) · [生产验收](#quality) · [知识来源](#sources) · [本地工具](#tools) · [文件导航](#files)
+[八套模板](#templates) · [八个信息方向](#directions) · [核心能力](#features) · [快速使用](#start) · [生产验收](#quality) · [发布复盘](#feedback) · [知识来源](#sources) · [本地工具](#tools) · [文件导航](#files)
+
+**让内容具体、画面对题、成品可查，发布之后还能继续改进。** 每篇先明确吸引新读者、提供保存价值、建立持续关注或解释具体问题中的一个主要目标。美好生活可以止于欣赏与交流；专业内容给清楚答案，不强制每篇带咨询。热度有数据、季节正相关与编辑假设分别说明，不承诺爆款。
 
 <a id="templates"></a>
 ## 八套实际设计模板
@@ -83,6 +85,8 @@ node scripts/select-design.cjs --input assets/templates/selection-example.json
 | 自然评论与反馈 | 提出本篇具体、易回答的问题，根据实际评论或后台资料提出后续选题 |
 | 视频与跨平台改编 | 提供无露脸视频/数字人脚本、时间、画面、字幕和素材需求；成片另需实际制作工具 |
 | 本地历史与版本 | 每日记录、重复检查、关联改版、指定页保护；实际记录留在仓库外 |
+| 自定义排版交付 | Python等工具制作后，按真实页数记录全文、素材和输出位置，封存摘要并检查文件是否错配 |
+| 小红书数据导入与复盘 | 只读XLSX/CSV，保留原始指标与缺失值，保存私有快照、人工确认笔记对应，按同窗口与主要任务分析 |
 | 技术与交付检查 | 核对实际页面文字、裁切、完全重复源图、品牌页尾、文件摘要与发布复制文案 |
 
 适合原创实拍、采访和案例素材有限的团队。内容可以来自独立问题、资料解释、比较、工具表、生活观察和创意设计，不需要把他人的经历改成自身案例。
@@ -131,15 +135,40 @@ node scripts/select-design.cjs --input assets/templates/selection-example.json
 
 工作流程：确定范围与保护项 → 查看历史 → 读取原稿和来源 → 核验主张 → 原稿对照与逐页任务 → 选择信息方向、模板及媒介 → 制作素材与排版 → 导出 → 原图、手机预览与整套节奏检查 → 发布字段核对 → 最终包检查 → 本地版本记录与交付。
 
+有发布反馈时，创作前加入“实际发布版本与表现复盘”，交付后由团队发布并关联笔记ID，再按真实统计时点回看。生成、发布、数据快照分别记录，不把已制作当作已发布。
+
 原稿到定稿按信息单元核对；定稿到图片由输入与实际DOM文字比对辅助，段数相同不证明语义完整。包检查核对源HTML、JSON、文字审计、源素材、导出图片与可复制文案，发现改了源码却未重新出图等问题。[原稿完整性](references/manuscript-fidelity.md) · [质量检查](references/production-quality.md)
 
 同套场景主图不能完全重复，裁切、调色、镜像或改文件名不算新图。工具按源内容哈希拦截完全重复，近似画面仍需人工判断；必要证据复用须明确资料角色与用途。八套模板不保证所有内容自动排得美观，仍要按实际稿件试排和检查。
+
+逐页先明确主体、动作、地点、道具和图片任务，排版裁切后再检查脸、手、地标、主要物件及关键条件。买菜画面要真的呈现采购；一张图片介绍多个地点时说明对应范围。知识页尽早进入答案，纯欣赏页保留画面与呼吸感。历史原稿的版式认可不代表资格、补助、就业或服务承诺可直接用于新稿，相关事实重新核验。
 
 ## 发布文案与标识
 
 每套完整笔记分别提供匹配图片的推荐标题、含适量emoji正文和相关话题。普通图文使用本地保守预算：标题20个UTF-16单元，正文连话题和换行1000单元；通常4—6个相关话题，本地编辑上限8个。它不是官方计数器或永久平台规则，投稿前按当前界面核对。[发布字段规范](references/xiaohongshu-publish-fields.md)
 
 成品图片和可复制文案不自动添加「AI示意」「AI生成」等来源字样。素材对应和声明提醒留在内部，由团队发布时手动添加平台声明；保留工具/平台要求的已有标识。
+
+<a id="feedback"></a>
+## 从已发布数据改进下一篇
+
+支持本地读取小红书笔记明细导出，不登录账户、不联网、不修改原表。识别曝光、观看量、平台封面点击率、赞评藏、涨粉、分享等字段；区分真实0和未提供，时长单位未知时保持未知。每篇先看主要任务，按同平台、体裁、相近发布年龄与投放条件比较。
+
+```sh
+python scripts/import-xhs-metrics.py --input /absolute/private/export.xlsx --out /absolute/private/xhs-feedback
+```
+
+需要Python 3.10+标准库，无需表格依赖；支持XLSX与UTF-8 CSV，旧XLS需先另存格式。统计时点有依据时可传 `--captured-at` 带时区ISO时间；投放和制作工具默认unknown。可用 `--note-map` 传团队确认的笔记ID/作品对应，不能按相同标题自动合并改名作品。
+
+输出不可覆盖的快照和此次导入摘要。同输入同配置重复导入不重复增加快照；不同统计时点保留为独立快照，累计数不直接相加。真实数据、评论、咨询记录及映射均存仓库外。观看量÷曝光不替代导出点击率；评论不是客户数，人均时长不是完播率。导入工具不自动建立同龄队列、计算跨快照增量或咨询归因，由Agent结合可得资料分析。
+
+复盘交付“观察、可能解释、待验证假设、下一篇主要改动、保持项、缺少的数据”。24小时、72小时、7天是可选观察窗口，不创建自动任务、不固定发文数量，也不用小样本给题材、画风或制作工具排永久名次。[复盘方法](references/performance-review.md) · [字段、映射与命令](references/publishing-feedback-schema.md)
+
+## 视频制作交接
+
+Skill提供核验后的主题、逐段旁白、画面任务、人物动作与站位、字幕、声音方向及验收表，可交给WorkBuddy、程序化动画或用户指定的实际可用工具。内置脚本不调用WorkBuddy、不生成配音或成片；用户已拒绝的工具不使用。
+
+拼贴模式单独检查前中后景、人物落地/坐席、刚性平移与小幅倾斜、旁白画面对应和字幕安全区；声音先用代表段核对自然度与音乐作用。开头、复杂人物镜头和密集文字先内部试合成，再扩展，减少反复返工。用户要求时交付与视频同画风的真实3:4、4:3封面。[视频交付](references/video-production.md) · [制作交接表](references/video-handoff.md)
 
 <a id="sources"></a>
 ## 专业知识与持续内容来源
@@ -165,10 +194,11 @@ node scripts/select-design.cjs --input assets/templates/selection-example.json
 <a id="tools"></a>
 ## 本地制作、查重与版本工具
 
-需要Node.js 20+、Playwright、可用的Chromium系浏览器和中文字体。仓库不附浏览器、字体或node_modules；渲染器组合已有本地素材，不负责联网取图或调用图片生成。联网核验、图片和视频生成由执行环境提供。
+图文渲染需要Node.js 20+、Playwright、可用的Chromium系浏览器和中文字体。历史、选择器、自定义包审计只需Node 20+；数据导入另需Python 3.10+标准库。仓库不附浏览器、字体或node_modules；渲染器组合已有本地素材，不负责联网取图或调用图片生成。联网核验、图片和视频生成由执行环境提供。
 
 ```sh
 npm install
+node scripts/check-env.cjs --mode render
 node scripts/render-post.cjs --input assets/templates/t7.json --out output/t7-v01
 node scripts/audit-package.cjs output/t7-v01
 ```
@@ -196,13 +226,25 @@ node scripts/content-history.cjs check --input assets/templates/t7.json
 
 查重结合正文、页面文字、源图片哈希和人工语义比较；换标题、emoji或配色不算增量。首次空库、换电脑未迁移记录或词面算法均不能证明全账号零重复。实际台账与本机配置不上传GitHub。[历史使用与边界](references/content-history.md)
 
+自定义图文也支持 `pages[].text/body` 与数值条件；返回coverage说明实际读取了多少页文字与图片，未知字段拒绝静默遗漏。完成包审计后显式登记，`--out`记录绝对输出位置；修订用 `--revision-of` 关联旧记录，保留旧版本。
+
+### Python等自定义排版的包审计
+
+```sh
+node scripts/custom-package.cjs seal --dir /absolute/private/completed-package
+node scripts/custom-package.cjs audit --dir /absolute/private/completed-package
+```
+
+先按规范准备真实页面输入、输出对应、发布复制文件和源文件清单。封存后，审计检测输入、素材、字体/脚本、最终PNG或发布文案是否变化，不覆盖旧清单；新版使用新目录。它只做结构、PNG头尺寸及摘要检查，不做完整图片解码、OCR或审美判断，不自动写历史。[自定义交付格式](references/custom-production.md)
+
 ### 测试与实际能力边界
 
 ```sh
 npm test
+python -m unittest discover -s tests -p test_import_xhs_metrics.py
 ```
 
-默认运行非浏览器检查；设置RUN_RENDER_TESTS=1运行浏览器回归，覆盖八套模板、原有题材样稿、旧五类基础输入、可迁移源、指定页保护、重复图片、文件错配、页尾品牌与本地历史。技术通过不代替事实、审美或平台审核，也不代表已上传小红书。视频脚本不等于成片。
+默认Node测试覆盖校验、历史、模板选择、运行环境和自定义包；Python测试覆盖导出解析、缺失值、映射、私有路径及重复快照。设置RUN_RENDER_TESTS=1运行浏览器回归，覆盖八套模板、原有题材样稿、旧五类基础输入、可迁移源、指定页保护、重复图片、文件错配、页尾品牌与本地历史。技术通过不代替事实、审美或平台审核，也不代表已上传小红书。视频脚本不等于成片。
 
 <a id="files"></a>
 ## 文件导航
@@ -216,6 +258,8 @@ npm test
 | 原稿与版本 | [原稿完整性](references/manuscript-fidelity.md)、[修改和私有资料](references/revision-and-private-data.md) |
 | 来源、生活与专业审核 | [来源库](references/source-library.md)、[生活文化](references/lifestyle-culture-engagement.md)、[证据审核](references/evidence-review.md) |
 | 选题、反馈与衔接 | [受众选题](references/audience-and-topics.md)、[素材反馈](references/materials-and-feedback.md)、[咨询定位](references/consultation-and-positioning.md) |
-| 本次升级与验证 | [八方向八模板方案](docs/eight-system-plan.md)、[验证记录](docs/validation.md) |
+| 发布复盘与私有快照 | [复盘方法](references/performance-review.md)、[字段与映射](references/publishing-feedback-schema.md) |
+| 自定义排版与视频交接 | [自定义包](references/custom-production.md)、[视频交接](references/video-handoff.md) |
+| 升级与验证 | [生产与反馈验证](docs/production-feedback-validation.md)、[八方向八模板方案](docs/eight-system-plan.md)、[原有验证记录](docs/validation.md) |
 
 客户资料、内部报价、合作证明、未公开案例与每日记录保存在私有工作区。创作不自动授权对外发布、发私信或回复评论，具体咨询如实说明服务范围和责任。仓库未附通用开源许可证；公开展示不自动授予品牌及素材自由再分发权。

@@ -10,6 +10,10 @@
 
 需要 Node.js 20 及以上、Playwright 和可启动的 Chromium 系浏览器。优先复用环境已有依赖；仓库中没有附带字体、浏览器或 node_modules。
 
+可先运行 `node scripts/check-env.cjs --mode core` 检查Node版本，或 `--mode render` 检查Playwright与配置浏览器文件是否存在；真正启动、字体、排版与美观仍在渲染时验收。工具只检查，不自动安装。表格导入另需Python 3.10+标准库，可用 `--mode metrics --python <解释器>` 检查。
+
+采用Python或其他工具制作的成品，按[自定义交付](custom-production.md)建立完整输入与摘要，再使用 `custom-package.cjs` 封存/审计；它不渲染、不做OCR、不替代目视检查、不自动登记。表格数据导入见[发布表现复盘](performance-review.md)，不与生成历史混为同一记录。
+
 在有 npm 的环境，可在仓库根目录执行 `npm install` 安装声明的依赖。此步骤会联网获取软件包，只有环境允许且用户授权相关安装时执行；不要自动安装大型浏览器。已有 Chrome/Edge 可用 `--browser` 指定可执行文件。
 
 已有 Playwright 时可以用环境变量 `PLAYWRIGHT_MODULE_PATH` 指向该模块目录，避免重复安装；`BROWSER_EXECUTABLE` 可指定浏览器。两者为可选本机配置，不写死绝对路径到公共代码。

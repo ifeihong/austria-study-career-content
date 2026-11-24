@@ -1,14 +1,16 @@
 {
   "name": "austria-study-career-content",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
-  "description": "Local image-text post renderer for the Austria Study & Career Content skill",
+  "description": "Local content production, history and publishing feedback tools for Austria Study & Career Content",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "render": "node scripts/render-post.cjs",
-    "test": "node --test tests/renderer.test.cjs tests/content-history.test.cjs tests/design-selection.test.cjs"
+    "test": "node --test tests/renderer.test.cjs tests/content-history.test.cjs tests/design-selection.test.cjs tests/check-env.test.cjs tests/custom-package.test.cjs",
+    "check:env": "node scripts/check-env.cjs --mode core",
+    "test:metrics": "python -m unittest discover -s tests -p test_import_xhs_metrics.py"
   },
   "dependencies": {
     "playwright": "1.62.1"

@@ -6,6 +6,7 @@ const {validatePost}=require('./render-post.cjs');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 function need(ok,message){if(!ok)throw new Error(message);}
 function auditPackage(directory){
+ require('./check-env.cjs').assertNodeVersion();
  const root=fs.realpathSync(directory);
  const read=relative=>{
   need(typeof relative==='string'&&!path.isAbsolute(relative)&&!relative.split(/[\\/]/).includes('..'),'Unsafe package path');
